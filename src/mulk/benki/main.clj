@@ -8,7 +8,7 @@
             [mulk.benki wiki auth]))
 
 
-(defonce server (doto (Thread. #(noir.server/start 3000))
+(defonce server (doto (Thread. #(noir.server/start 3001))
                   (.setDaemon true)
                   (.start)))
 
