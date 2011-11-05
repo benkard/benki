@@ -4,10 +4,13 @@
         noir.core
         [hiccup core     page-helpers]
         [mulk.benki      util])
-  (:require noir.server))
+  (:require noir.server
+            [mulk.benki wiki auth]))
 
 
-(defonce server (noir.server/start 3000))
+(defonce server (doto (Thread. #(noir.server/start 3000))
+                  (.setDaemon true)
+                  (.start)))
 
 (defn wrap-utf-8 [handler]
   (fn [request]
@@ -44,3 +47,8 @@
   (layout
    [:h1 "Journal"]))
 
+
+(defn -main [& args]
+  (loop []
+    (Thread/sleep 1000000)
+    (recur)))

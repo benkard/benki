@@ -1,11 +1,7 @@
 (defproject benki "0.0.0"
   :description "The Benkard Family Hub"
-  :dependencies [;;[org.clojure/clojure "1.4.0-master-SNAPSHOT"]
-                 [org.clojure/clojure "1.3.0"]
-                 ;;[org.clojure.contrib/standalone "1.3.0-alpha4"]
+  :dependencies [[org.clojure/clojure "1.3.0"]
                  [org.clojure.contrib/standalone "1.3.0-SNAPSHOT"]
-                 ;;[match "0.2.0-SNAPSHOT"]
-                 ;; https://oss.sonatype.org/content/repositories/snapshots/org/clojure/
                  [org.clojure/core.match "0.2.0-SNAPSHOT"]
                  [org.clojure/core.logic "0.6.6-SNAPSHOT"]
                  [org.clojure/core.unify "0.5.2-SNAPSHOT"]
@@ -35,5 +31,6 @@
   :repositories [["sonatype-snapshots"
                   ;;https confuses leiningen (but not cake)
                   "http://oss.sonatype.org/content/repositories/snapshots/"]
-                 ["clojars" "http://clojars.org/repo/"]])
+                 ["clojars" "http://clojars.org/repo/"]]
+  :main mulk.benki.main)
 

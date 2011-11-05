@@ -12,8 +12,7 @@
         clojureql.core
         [clojure.java.jdbc
          :only [transaction]]
-        noir.core)
-  (:require mulk.benki.main))
+        noir.core))
 
 
 (def page_revisions (table :page_revisions))
