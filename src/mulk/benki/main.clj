@@ -28,26 +28,6 @@
   )
 
 
-(defpage "/welcome" []
-  "<h1>Hello World</h1>
-
-  <p>Hi!</p>")
-
-(defpage "/hello" {name :name}
-  (layout
-   [:h1 "Greeting"]
-   [:p (fmt nil "Hi~@[ ~A~]!" name)]))
-
-(defpage "/journal/:id" {id :id}
-  (layout
-   [:h1 "Journal Entry #" id]
-   [:p "Bla bla bla."]))
-
-(defpage "/journal" {}
-  (layout
-   [:h1 "Journal"]))
-
-
 (defn -main [& args]
   (loop []
     (Thread/sleep 1000000)
