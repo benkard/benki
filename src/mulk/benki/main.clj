@@ -4,7 +4,7 @@
         noir.core
         [hiccup core     page-helpers]
         [mulk.benki      util])
-  (:require noir.server
+  (:require [noir server options]
             [mulk.benki wiki auth]))
 
 
@@ -22,10 +22,16 @@
         (assoc-in response [:headers "Content-Type"] utf8ctype)
         response))))
 
+(defn wrap-base-uri [handler]
+  (fn [request]
+    (prn "Hello!")
+    (let [base-uri "http://localhost:3001/"]
+      (with-base-url base-uri
+        ((noir.options/wrap-options handler {:base-url base-uri}) request)))))
+
 (do-once ::init
-  (noir.server/add-middleware #'wrap-utf-8)
-  ;;(set! *base-url* nil)
-  )
+  (noir.server/add-middleware #(wrap-utf-8 %))
+  (noir.server/add-middleware #(wrap-base-uri %)))
 
 
 (defn -main [& args]
