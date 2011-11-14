@@ -42,7 +42,8 @@
                  [org.clojure/java.jdbc "0.1.1"]
 
                  ;; Other databases
-                 [com.sleepycat/je "4.1.10"]  ;4.0.96 if the Oracle Maven repo scares you
+                 ;;[com.sleepycat/je "4.1.10"]  ;4.0.96 if the Oracle Maven repo scares you
+                 [tokyocabinet "1.24.0"]
                  ;;[com.h2database/h2 "1.3.161"]
                  ;;[hypergraphdb/hypergraphdb "1.1"]     ;no Maven artifact
                  ;;[org.clojars.gregburd/cupboard "1.0.0-SNAPSHOT"]

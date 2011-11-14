@@ -2,46 +2,41 @@
   (:refer-clojure)
   (:use mulk.benki.util
         clojure.java.io)
-  (:import [com.sleepycat.je
-            Database DatabaseConfig DatabaseEntry Environment EnvironmentConfig
-            OperationStatus]))
+  (:import [tokyocabinet HDB ADB]))
 
-(def ^{:dynamic true :private true} *txn*)
-(def ^{:dynamic true :private true} *db*)
+(def ^{:private true} db (HDB.))
 
 (defn- db-directory []
   ;; FIXME: This is a hack.
   ;;(file (.getParent (first (clojure.java.classpath/classpath))) "db")
   (file "db"))
 
-(defn- make-db-env []
-  (let [envconfig (doto (EnvironmentConfig.)
-                    (.setTransactional            true)
-                    (.setAllowCreate              true)
-                    (.setTxnSerializableIsolation true))]
-    (Environment. (db-directory) envconfig)))
-
-(defonce dbenv (make-db-env))
-
 (defn call-with-transaction [thunk]
-  (binding [*txn* (.beginTransaction dbenv nil nil)]
-    (try (let [result (thunk)]
-           (.commit *txn*)
-           result)
-      (finally (.abort *txn*)))))
+  (let [tr? (.tranbegin db)]
+    (if tr?
+      (try (let [result (thunk)]
+             (.trancommit db)
+             result)
+           (finally (.tranabort db)))
+      (do (.println java.lang.System/err "-- RETRYING TRANSACTION --")
+          (Thread/sleep 300)
+          (call-with-transaction thunk)))))
 
-(defn call-with-db [thunk]
-  (let [dbconfig (doto (DatabaseConfig.)
-                   (.setTransactional            true)
-                   (.setAllowCreate              true)
-                   (.setSortedDuplicates         false))]
-    (call-with-transaction
-      (fn []
-        (binding [*db* (.openDatabase dbenv *txn* "benki" dbconfig)]
-          (thunk))))))
+(defn call-with-db [thunk mode]
+  (let [op? (.open db (str (file (db-directory) "benki.tch")) mode)]
+    (if op?
+      (try (thunk)
+           (finally (.close db)))
+      (do (.println java.lang.System/err "-- RETRYING OPENING DB --")
+          (Thread/sleep 300)
+          (call-with-transaction thunk)))))
 
-(defmacro with-db [& body]
-  `(call-with-db (fn [] ~@body)))
+(defmacro with-dbw [& body]
+  `(call-with-db (fn [] (call-with-transaction (fn [] ~@body)))
+     (bit-or HDB/OTSYNC HDB/OWRITER HDB/OCREAT)))
+
+(defmacro with-dbr [& body]
+  `(call-with-db (fn [] ~@body) HDB/OREADER))
 
 (defn- dump-str-for-db [x]
   (binding [*print-dup*  true
@@ -49,21 +44,13 @@
     (pr-str x)))
 
 (defn- getkey [key default]
-  (let [entry (DatabaseEntry.)]
-    (if (= (.get *db* *txn* (DatabaseEntry. (.getBytes key)) entry nil)
-           OperationStatus/SUCCESS)
-      (-> entry
-          (.getData)
-          (String.)
-          (read-string))
-      default)))
+  (let [thing (.get db (str key))]
+    (if (nil? thing)
+      default
+      (read-string thing))))
 
 (defn- putkey [key val]
-  (let [bdbkey key]
-    (.put *db*
-          *txn*
-          (DatabaseEntry. (.getBytes bdbkey))
-          (DatabaseEntry. (.getBytes (dump-str-for-db val))))))
+  (.put db (str key) (dump-str-for-db val)))
 
 
 (defonce state-vars (atom {}))
@@ -72,19 +59,24 @@
 (defmacro defstate [sym default]
   (let [dbkey (str *ns* "/" (name sym))]
     `(defonce ~sym
-       (let [r# (ref (with-db (getkey ~dbkey ~default)))]
+       (let [r# (ref (with-dbr (getkey ~dbkey ~default)))]
          (swap! state-vars #(assoc % ~dbkey r#))
          r#))))
 
 
 (defn save-all-global-state! []
-  (with-db
+  (with-dbw
     (dosync
       (doseq [[key r] @state-vars]
         (putkey key (ensure r))))))
 
 (defn reload-all-global-state! []
-  (with-db
+  (with-dbr
     (dosync
       (doseq [[key r] @state-vars]
         (alter r #(getkey key %))))))
+
+
+;; Example.
+(comment
+  (defstate testvar 150))
