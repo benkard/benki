@@ -25,7 +25,7 @@
 (defn wrap-base-uri [handler]
   (fn [request]
     (prn "Hello!")
-    (let [base-uri "http://localhost:3001/"]
+    (let [base-uri "http://localhost:3001"]
       (with-base-url base-uri
         ((noir.options/wrap-options handler {:base-url base-uri}) request)))))
 
