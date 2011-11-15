@@ -8,10 +8,6 @@
             [mulk.benki wiki auth]))
 
 
-(defonce server (doto (Thread. #(noir.server/start 3001))
-                  (.setDaemon true)
-                  (.start)))
-
 (defn wrap-utf-8 [handler]
   (fn [request]
     (let [response  (handler request)
@@ -24,7 +20,6 @@
 
 (defn wrap-base-uri [handler]
   (fn [request]
-    (prn "Hello!")
     (let [base-uri "http://localhost:3001"]
       (with-base-url base-uri
         ((noir.options/wrap-options handler {:base-url base-uri}) request)))))
@@ -32,6 +27,10 @@
 (do-once ::init
   (noir.server/add-middleware #(wrap-utf-8 %))
   (noir.server/add-middleware #(wrap-base-uri %)))
+
+(defonce server (doto (Thread. #(noir.server/start 3001))
+                  (.setDaemon true)
+                  (.start)))
 
 
 (defn -main [& args]
