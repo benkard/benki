@@ -3,13 +3,15 @@
   (:use [clojure         core repl pprint]
         [clojure.contrib repl-utils]
         [hiccup core     page-helpers]
-        [mulk.benki      util]
+        [mulk.benki      util db]
         [clojure.core.match.core
          :only [match]]
-        [noir            core])
-  (:require [noir.session  :as session]
-            [noir.response :as response]
-            [noir.request  :as request])
+        [noir            core]
+        [clojure.java.jdbc :only [transaction do-commands]])
+  (:require [noir.session      :as session]
+            [noir.response     :as response]
+            [noir.request      :as request]
+            [clojure.java.jdbc :as sql])
   (:import [org.openid4java.consumer ConsumerManager]
            [org.openid4java.message ParameterList]))
 
@@ -30,17 +32,27 @@
         verification (.verify manager request-uri parlist discovered)
         id           (.getVerifiedId verification)]
     (if id
-      (layout "Authenticated!"
-              [:p "Authentication result: " [:strong [:code (escape-html (fmt nil "~S" (bean id)))]]
-               " (identifier: " [:strong [:code (escape-html (.getIdentifier id))]] ")"])
-      (layout "Authentication Failed"))))
+      (with-dbt
+        (let [openid  (first (query "SELECT * FROM openids WHERE openid = ?"
+                                    (.getIdentifier id)))
+              user-id (if openid
+                        (:user openid)
+                        nil)
+              user    (first (if user-id
+                               (query "SELECT * FROM users WHERE id = ?" user-id)
+                               nil))]
+          (if user-id
+            (do (session/put! :user user-id)
+                (layout "Authenticated!" [:p "Welcome back, " (:first_name user) "!"]))
+            (layout "Authentication Failed" [:p "Did not recognize OpenID."]))))
+      (layout "Authentication Failed" [:p "OpenID authentication failed."]))))
+
 
 (defpage [:post "/login/return"] []
   (return-from-openid-provider))
 
 (defpage "/login/return" []
   (return-from-openid-provider))
-
 
 (defpage "/login/authenticate" {openid :openid}
   (let [discoveries (.discover     manager openid)
@@ -50,7 +62,6 @@
                                    )]
     (session/put! :discovered discovered)
     (response/redirect (.getDestinationUrl authreq true))))
-
 
 (defpage "/login" []
   (layout "Benki Login"
