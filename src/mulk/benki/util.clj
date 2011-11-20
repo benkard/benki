@@ -21,7 +21,7 @@
 
 ;; defpartial is just defn + html.
 (defpartial layout [title & content]
-  (html5
+  (html5 {:xml? true}
    [:head
     [:title title]
     ;; jQuery

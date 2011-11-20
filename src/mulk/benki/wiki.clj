@@ -26,7 +26,8 @@
                       (select (where (=* :title title)))
                       (select (where (if revision-id
                                        (=* :id revision-id)
-                                       (=* 0 0)))))
+                                       (=* 0 0))))
+                      (sort [:date#desc]))
         revision  (with-dbt (first @revisions))]
     (layout (fmt nil "~A — Benki~@[/~A~] " title revision-id)
       (if revision
@@ -34,7 +35,7 @@
         [:div#wiki-page-content [:p "This page does not exist yet."]])
       [:hr]
       [:div#wiki-page-footer {:style "text-align: right"}
-       [:a {:href (link :wiki title :edit)} "Edit"
+       [:a {:href (link :wiki title :revisions)} "Page revisions"
         ]])))
 
 (defn insert-empty-page []
@@ -44,7 +45,8 @@
 (defpage [:post "/wiki/:title"] {title :title, content :content}
   (with-dbt
     (let [revisions (-> page_revisions
-                        (select (where (=* :title title))))
+                        (select (where (=* :title title)))
+                        (sort [:date#desc]))
           revision  (first @revisions)
           page      (:page revision)]
       (println "For page: " title " (id " page ");  got content: " content)
