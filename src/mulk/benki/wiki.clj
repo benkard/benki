@@ -4,35 +4,55 @@
   (:use [clojure         repl pprint]
         [clojure.contrib error-kit]
         [hiccup core     page-helpers]
-        [mulk.benki      util]
+        [mulk.benki      util db]
         [clojure.core.match.core
          :only [match]]
-        [ring.util.response
-         :only [redirect]]
-        clojureql.core
-        [clojure.java.jdbc
-         :only [transaction]]
-        noir.core))
+        [clojureql core predicates]
+        noir.core)
+  (:require [noir.session      :as session]
+            [noir.response     :as response]
+            [clojure.java.jdbc :as sql]))
 
 
-(def page_revisions (table :page_revisions))
-(def pages          (table :pages))
+(def page_revisions (table :wiki_page_revisions))
+(def pages          (table :wiki_pages))
 
 
 (defpage "/wiki" []
-  (redirect (resolve-uri "/wiki/Home")))
+  (response/redirect (resolve-uri "/wiki/Home")))
 
-(defpage "/wiki/:id" {id :id, revision-id :revision}
-  (let [page      (-> pages
-                      (select (if (number? id)
-                                (where (= :id    id))
-                                (where (= :title id)))))
-        revisions (-> page_revisions
-                      (join page (where (= :pages.id :page_revisions.page)))
-                      ;;(project [:page_revisions.*])
-                      (project page_revisions))
-        revision  (if revision-id
-                    (select revisions (where (= :id revision-id)))
-                    (first (sort revisions [:published#desc])))]
-    (layout (fmt nil "~A — Benki~@[/~A~] " id revision-id)
-      [:pre (prn-str revision)])))
+(defpage "/wiki/:title" {title :title, revision-id :revision}
+  (let [revisions (-> page_revisions
+                      (select (where (=* :title title)))
+                      (select (where (if revision-id
+                                       (=* :id revision-id)
+                                       (=* 0 0)))))
+        revision  (with-dbt (first @revisions))]
+    (layout (fmt nil "~A — Benki~@[/~A~] " title revision-id)
+      (if revision
+        [:div#wiki-page-content (:content revision)]
+        [:div#wiki-page-content [:p "This page does not exist yet."]])
+      [:hr]
+      [:div#wiki-page-footer {:style "text-align: right"}
+       [:a {:href (link :wiki title :edit)} "Edit"
+        ]])))
+
+(defn insert-empty-page []
+  (sql/with-query-results results ["insert into wiki_pages default values returning *"]
+    (first (into () results))))
+
+(defpage [:post "/wiki/:title"] {title :title, content :content}
+  (with-dbt
+    (let [revisions (-> page_revisions
+                        (select (where (=* :title title))))
+          revision  (first @revisions)
+          page      (:page revision)]
+      (println "For page: " title " (id " page ");  got content: " content)
+      (if-let [user (Integer. (session/get :user))]
+        (let [page-id (if page page (:id (insert-empty-page)))]
+          (sql/insert-values
+           :wiki_page_revisions
+           [:page   :title :content :author :format]
+           [page-id title  content  user    "html5"])
+          {:stetus 200, :headers {}, :body ""})
+        {:status 403, :headers {}, :body ""}))))

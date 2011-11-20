@@ -5,7 +5,8 @@
         [hiccup core     page-helpers]
         [mulk.benki      util])
   (:require [noir server options]
-            [mulk.benki wiki auth]))
+            [mulk.benki wiki auth]
+            [ring.middleware.file]))
 
 
 (defn wrap-utf-8 [handler]
@@ -26,7 +27,9 @@
 
 (do-once ::init
   (noir.server/add-middleware #(wrap-utf-8 %))
-  (noir.server/add-middleware #(wrap-base-uri %)))
+  (noir.server/add-middleware #(wrap-base-uri %))
+  ;;(noir.server/add-middleware #(ring.middleware.static/wrap-static ))
+  (noir.server/add-middleware #(ring.middleware.file/wrap-file % "static")))
 
 (defonce server (doto (Thread. #(noir.server/start 3001))
                   (.setDaemon true)

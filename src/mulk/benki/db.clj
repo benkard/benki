@@ -24,3 +24,6 @@
 (defmacro query [query-string & params]
   `(sql/with-query-results results# ~(into [] (concat [query-string] params))
      (into '() results#)))
+
+(defmacro query1 [query-string & params]
+  `(first (query ~query-string ~@params)))

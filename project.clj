@@ -30,7 +30,7 @@
 
                  ;; Web app utilities
                  [ring "1.0.0-RC1"]
-                 [noir "1.2.2-SNAPSHOT"]
+                 [noir "1.2.1"]
                  [hiccup "0.3.7"]
                  [cssgen "0.2.5-SNAPSHOT"]
                  ;;[clj-http "0.2.3"]

@@ -19,12 +19,15 @@
 (defonce manager (ConsumerManager.))
 
 
+(defn redirect [x]
+  {:status 302, :headers {"Location" x}, :body ""})
+
+
 (defpartial return-from-openid-provider []
   (let [parlist      (ParameterList. (:query-params (request/ring-request)))
         discovered   (session/get :discovered)
         ;; Does the following work for POST requests?
-        request-uri  (str "http://localhost:3001/login/return"
-                          ;;(resolve-uri "/login/return")
+        request-uri  (str (resolve-uri "/login/return")
                           (let [query-string (:query-string (request/ring-request))]
                             (if query-string
                               (str "?" query-string)
@@ -43,7 +46,9 @@
                                nil))]
           (if user-id
             (do (session/put! :user user-id)
-                (layout "Authenticated!" [:p "Welcome back, " (:first_name user) "!"]))
+                (if-let [return-uri (session/flash-get)]
+                  (redirect return-uri)
+                  (layout "Authenticated!" [:p "Welcome back, " (:first_name user) "!"])))
             (layout "Authentication Failed" [:p "Did not recognize OpenID."]))))
       (layout "Authentication Failed" [:p "OpenID authentication failed."]))))
 
@@ -57,11 +62,9 @@
 (defpage "/login/authenticate" {openid :openid}
   (let [discoveries (.discover     manager openid)
         discovered  (.associate    manager discoveries)
-        authreq     (.authenticate manager discovered ;;(resolve-uri "/login/return")
-                                   "http://localhost:3001/login/return"
-                                   )]
+        authreq     (.authenticate manager discovered (resolve-uri "/login/return"))]
     (session/put! :discovered discovered)
-    (response/redirect (.getDestinationUrl authreq true))))
+    (redirect (.getDestinationUrl authreq true))))
 
 (defpage "/login" []
   (layout "Benki Login"
