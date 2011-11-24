@@ -5,12 +5,15 @@ if (!mulk) {
 }
 
 mulk.savePage = function() {
-    $.ajax({
+    jQuery.ajax({
         url: "?save",
         data: { content: $('#wiki-page-content').html() },
         type: "POST",
-        success: function() {
+        dataType: "text",
+        success: function(data) {
             mulk.savePage();
+            console.log(data);
+            jQuery('#wiki-page-content').html(data);
             console.log('Success.');
         },
         error: function() {

@@ -121,5 +121,5 @@
            :wiki_page_revisions
            [:page   :title :content :author :format]
            [page-id title  (unwikilinkify content) user "html5"])
-          {:stetus 200, :headers {}, :body ""})
+          {:stetus 200, :headers {}, :body (wikilinkify (unwikilinkify content))})
         {:status 403, :headers {}, :body ""}))))
