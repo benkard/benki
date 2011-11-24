@@ -35,7 +35,7 @@
         (let [new-node (org.jsoup.nodes.Element.
                         (org.jsoup.parser.Tag/valueOf "span")
                         "")]
-          (.html new-node (html-insert-wikilinks (.html node)))
+          (.html new-node (html-insert-wikilinks (.text subnode)))
           (.replaceWith subnode new-node)
           (.unwrap new-node))))
     (-> doc (.select "body") (.html))))
