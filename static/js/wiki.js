@@ -1,3 +1,24 @@
+var mulk;
+
+if (!mulk) {
+    mulk = {};
+}
+
+mulk.savePage = function() {
+    $.ajax({
+        url: "?save",
+        data: { content: $('#wiki-page-content').html() },
+        type: "POST",
+        success: function() {
+            mulk.savePage();
+            console.log('Success.');
+        },
+        error: function() {
+            console.log('Error.');
+        }
+    });
+};
+
 /*
 jQuery(function ($) {
     $('#wiki-page-content').on('blur', function() {
@@ -10,7 +31,6 @@ jQuery(function ($) {
 });
 */
 
-
 jQuery(function ($) {
     if (!window.Aloha) {
 	window.Aloha = {};		
@@ -18,7 +38,7 @@ jQuery(function ($) {
     window.Aloha.settings = {
 	logLevels: {'error': true, 'warn': true, 'info': true, 'debug': false},
 	errorhandling : false,
-	ribbon: true,
+	ribbon: false,
 
 	"i18n": {
 	    "current": "de"
@@ -52,19 +72,10 @@ jQuery(function ($) {
 	$$('#wiki-page-content').aloha();
         var save = function() {
             console.log('Saving changes.');
-            $.ajax({
-                url: "?save",
-                data: { content: $('#wiki-page-content').html() },
-                type: "POST",
-                success: function() {
-                    console.log('Success.');
-                },
-                error: function() {
-                    console.log('Error.');
-                }
-            });
+            mulk.savePage();
         };
 	$('#wiki-page-content').on('blur', save);
 	//$('#wiki-page-content').on('datachanged', save);
     });
 });
+
