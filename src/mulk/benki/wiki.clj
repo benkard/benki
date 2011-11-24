@@ -31,7 +31,6 @@
     (doseq [node     (into [] (.select doc "*"))
             subnode  (into [] (.childNodes node))]
       (when (instance? org.jsoup.nodes.TextNode subnode)
-        (println subnode)
         (let [new-node (org.jsoup.nodes.Element.
                         (org.jsoup.parser.Tag/valueOf "span")
                         "")]
@@ -114,7 +113,6 @@
                         (sort [:date#desc]))
           revision  (first @revisions)
           page      (:page revision)]
-      ;; FIXME: Strip auto-generated WikiLinks from input.
       (if-let [user (Integer. (session/get :user))]
         (let [page-id (if page page (:id (insert-empty-page)))]
           (sql/insert-values
