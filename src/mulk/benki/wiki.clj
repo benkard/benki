@@ -27,17 +27,23 @@
 
 
 (defn- wikilinkify [tag-soup]
-  (let [doc        (org.jsoup.Jsoup/parse tag-soup)
-        leaf-nodes (filter #(empty? (.children %))
-                           (.select doc "*"))]
-    (doseq [node leaf-nodes]
-      (.html node (html-insert-wikilinks (.html node))))
+  (let [doc   (org.jsoup.Jsoup/parse tag-soup) ]
+    (doseq [node     (into [] (.select doc "*"))
+            subnode  (into [] (.childNodes node))]
+      (when (instance? org.jsoup.nodes.TextNode subnode)
+        (println subnode)
+        (let [new-node (org.jsoup.nodes.Element.
+                        (org.jsoup.parser.Tag/valueOf "span")
+                        "")]
+          (.html new-node (html-insert-wikilinks (.html node)))
+          (.replaceWith subnode new-node)
+          (.unwrap new-node))))
     (-> doc (.select "body") (.html))))
 
 (defn- unwikilinkify [tag-soup]
   (let [doc (org.jsoup.Jsoup/parse tag-soup)]
-    (-> doc (.select ".benkilink") (.remove))
-    (-> doc (.select "body")       (.html))))
+    (doseq [node (-> doc (.select ".benkilink") (.unwrap))])
+    (-> doc (.select "body") (.html))))
 
 
 (defpage "/wiki" []

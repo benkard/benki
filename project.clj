@@ -53,7 +53,9 @@
                  ;; Additional libraries
                  ;;[clj-oauth2 "0.0.1"]
                  ;;[org.clojars.zef/jopenid "1.05"]
-                 [org.openid4java/openid4java-consumer "0.9.6" :type "pom"]]
+                 [org.openid4java/openid4java-consumer "0.9.6" :type "pom"]
+                 [org.jsoup/jsoup "1.6.1"]
+                 ]
   :dev-dependencies [;;[swank-clojure "1.3.2"]
                      [swank-clojure "1.4.0-SNAPSHOT"]
                      ;;[ring-serve "0.1.1"]
