@@ -45,4 +45,4 @@
 
 (defn link [& args]
   (match [(vec args)]
-    [[:wiki title & xs]] (fresolve "/wiki/~a~@[?~a~]" title (name (first xs)))))
+    [[:wiki title & xs]] (fresolve "/wiki/~a~@[~a~]" title (first xs))))
