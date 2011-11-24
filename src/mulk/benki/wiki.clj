@@ -11,11 +11,33 @@
         noir.core)
   (:require [noir.session      :as session]
             [noir.response     :as response]
-            [clojure.java.jdbc :as sql]))
+            [clojure.java.jdbc :as sql])
+  (:import [org.jsoup.Jsoup]))
 
 
 (def page_revisions (table :wiki_page_revisions))
 (def pages          (table :wiki_pages))
+
+
+(defn- html-insert-wikilinks [text]
+  (clojure.string/replace
+   text
+   #"\p{javaUpperCase}+\p{javaLowerCase}+\p{javaUpperCase}+\p{javaLowerCase}+\w+"
+   (fn [x] (fmt nil "<a href=\"~a\" class=\"benkilink\">~a</a>" (link :wiki x) x))))
+
+
+(defn- wikilinkify [tag-soup]
+  (let [doc        (org.jsoup.Jsoup/parse tag-soup)
+        leaf-nodes (filter #(empty? (.children %))
+                           (.select doc "*"))]
+    (doseq [node leaf-nodes]
+      (.html node (html-insert-wikilinks (.html node))))
+    (-> doc (.select "body") (.html))))
+
+(defn- unwikilinkify [tag-soup]
+  (let [doc (org.jsoup.Jsoup/parse tag-soup)]
+    (-> doc (.select ".benkilink") (.remove))
+    (-> doc (.select "body")       (.html))))
 
 
 (defpage "/wiki" []
@@ -30,10 +52,9 @@
                                (with-dbt (first @(select page_revisions
                                                          (where (=* :id (Integer/parseInt revision-id))))))
                                (with-dbt (first @revisions-with-title)))]
-    ;; FIXME: Insert WikiLinks.
     (layout (fmt nil "~A — Benki~@[/~A~] " title revision-id)
             (if revision
-              [:div#wiki-page-content (:content revision)]
+              [:div#wiki-page-content (wikilinkify (:content revision))]
               [:div#wiki-page-content [:p "This page does not exist yet."]])
             [:hr]
             [:div#wiki-page-footer {:style "text-align: right"}
@@ -93,6 +114,6 @@
           (sql/insert-values
            :wiki_page_revisions
            [:page   :title :content :author :format]
-           [page-id title  content  user    "html5"])
+           [page-id title  (unwikilinkify content) user "html5"])
           {:stetus 200, :headers {}, :body ""})
         {:status 403, :headers {}, :body ""}))))
