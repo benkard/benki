@@ -1,0 +1,10 @@
+.cake
+classes
+db
+native
+lib
+static/3rdparty
+
+*~
+pom.xml
+
