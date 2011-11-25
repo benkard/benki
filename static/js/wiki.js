@@ -11,28 +11,32 @@ mulk.savePage = function() {
         type: "POST",
         dataType: "text",
         success: function(data) {
-            mulk.savePage();
-            console.log(data);
             jQuery('#wiki-page-content').html(data);
-            console.log('Success.');
+            console.log('Page saved.');
         },
         error: function() {
-            console.log('Error.');
+            console.log('Error saving content.');
         }
     });
+    $('#wiki-page-content').removeAttr('contenteditable');
 };
 
 /*
 jQuery(function ($) {
     $('#wiki-page-content').on('blur', function() {
-        // FIXME: Save.
+        mulk.savePage();
         document.designMode = 'off';
     });
-    $('#wiki-page-content').on('focus', function() {
+    $('body').on('click', function() {
+        mulk.savePage();
+        document.designMode = 'off';
+    });
+    $('#wiki-page-content').on('dblclick', function() {
         document.designMode = 'on';
     });
 });
 */
+
 
 jQuery(function ($) {
     if (!window.Aloha) {
@@ -73,12 +77,17 @@ jQuery(function ($) {
     Aloha.ready(function() {
 	var $$ = Aloha.jQuery;
 	$$('#wiki-page-content').aloha();
-        var save = function() {
-            console.log('Saving changes.');
+        var editable = Aloha.editables[0];
+        editable.disable();
+	$('#wiki-page-content').on('blur', function() {
             mulk.savePage();
-        };
-	$('#wiki-page-content').on('blur', save);
-	//$('#wiki-page-content').on('datachanged', save);
+            editable.disable();
+        });
+        $('#wiki-page-content').on('focus', function() {
+        });
+        $('#wiki-page-content').dblclick(function() {
+            editable.enable();
+        });
     });
 });
 
