@@ -49,7 +49,9 @@
                 (if-let [return-uri (session/flash-get)]
                   (redirect return-uri)
                   (layout "Authenticated!" [:p "Welcome back, " (:first_name user) "!"])))
-            (layout "Authentication Failed" [:p "Did not recognize OpenID."]))))
+            (layout "Authentication Failed"
+                    [:p "Did not recognize OpenID."]
+                    [:p "Your OpenID is: " [:strong (.getIdentifier id)]]))))
       (layout "Authentication Failed" [:p "OpenID authentication failed."]))))
 
 
