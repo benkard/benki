@@ -6,7 +6,8 @@
         [mulk.benki      util])
   (:require [noir server options]
             [mulk.benki wiki auth]
-            [ring.middleware.file]))
+            [ring.middleware.file]
+            [noir.session      :as session]))
 
 
 (defn wrap-utf-8 [handler]

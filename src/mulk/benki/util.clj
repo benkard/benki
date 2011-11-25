@@ -2,7 +2,10 @@
   (:refer-clojure)
   (:use [hiccup core page-helpers]
         [clojure.core.match.core :only [match]]
-        noir.core))
+        noir.core)
+  (:require [noir.session  :as session]
+            [noir.request  :as request]
+            [noir.response :as response]))
 
 
 (def fmt clojure.pprint/cl-format)
@@ -46,3 +49,13 @@
 (defn link [& args]
   (match [(vec args)]
     [[:wiki title & xs]] (fresolve "/wiki/~a~@[~a~]" title (first xs))))
+
+(defn call-with-auth [thunk]
+  (println (request/ring-request))
+  (if (session/get :user)
+    (thunk)
+    (do (session/flash-put! (:uri (request/ring-request)))
+        (response/redirect "/login"))))
+
+(defmacro with-auth [& body]
+  `(call-with-auth (fn [] ~@body)))

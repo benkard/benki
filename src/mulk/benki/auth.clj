@@ -23,7 +23,7 @@
   {:status 302, :headers {"Location" x}, :body ""})
 
 
-(defpartial return-from-openid-provider []
+(defn return-from-openid-provider []
   (let [parlist      (ParameterList. (:query-params (request/ring-request)))
         discovered   (session/get :discovered)
         ;; Does the following work for POST requests?
