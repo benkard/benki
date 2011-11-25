@@ -103,12 +103,14 @@
                         (select (where (=* :title title)))
                         (sort [:date#desc]))
           revision  (first @revisions)
-          page      (:page revision)]
+          page      (:page revision)
+          dbcontent (unwikilinkify content)]
       (if-let [user (Integer. (session/get :user))]
         (let [page-id (if page page (:id (insert-empty-page)))]
-          (sql/insert-values
-           :wiki_page_revisions
-           [:page   :title :content :author :format]
-           [page-id title  (unwikilinkify content) user "html5"])
-          {:stetus 200, :headers {}, :body (wikilinkify (unwikilinkify content))})
+          (when-not (= (:content revision) dbcontent)  ;skip if content unmodified
+            (sql/insert-values
+             :wiki_page_revisions
+             [:page   :title :content  :author :format]
+             [page-id title  dbcontent user   "html5"]))
+          {:stetus 200, :headers {}, :body (wikilinkify dbcontent)})
         {:status 403, :headers {}, :body ""}))))
