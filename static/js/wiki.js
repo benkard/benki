@@ -76,8 +76,9 @@ jQuery(function ($) {
 
     Aloha.ready(function() {
 	var $$ = Aloha.jQuery;
+        var editable;
 	$$('#wiki-page-content').aloha();
-        var editable = Aloha.editables[0];
+        editable = Aloha.editables[0];
         editable.disable();
 	$('#wiki-page-content').on('blur', function() {
             mulk.savePage();

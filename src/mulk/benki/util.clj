@@ -51,7 +51,6 @@
     [[:wiki title & xs]] (fresolve "/wiki/~a~@[~a~]" title (first xs))))
 
 (defn call-with-auth [thunk]
-  (println (request/ring-request))
   (if (session/get :user)
     (thunk)
     (do (session/flash-put! (:uri (request/ring-request)))
