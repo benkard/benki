@@ -83,8 +83,6 @@ jQuery(function ($) {
             mulk.savePage();
             editable.disable();
         });
-        $('#wiki-page-content').on('focus', function() {
-        });
         $('#wiki-page-content').dblclick(function() {
             editable.enable();
         });
