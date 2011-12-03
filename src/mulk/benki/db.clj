@@ -9,7 +9,7 @@
    :subprotocol "postgresql"
    :subname "//localhost:5432/benki"
    :user "benki"
-   :password ""})
+   :password (slurp "dbpassword.txt")})
 
 (defn call-with-db [thunk]
   (sql/with-connection db
