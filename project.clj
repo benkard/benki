@@ -29,7 +29,7 @@
                  ;;[org.clojure.contrib/standalone "1.3.0-SNAPSHOT"]
 
                  ;; Web app utilities
-                 [ring "1.0.0-RC1"]
+                 [ring "1.0.0-RC5"]
                  [noir "1.2.1"]
                  [hiccup "0.3.7"]
                  [cssgen "0.2.5-SNAPSHOT"]
