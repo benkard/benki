@@ -6,5 +6,6 @@ lib
 static/3rdparty
 
 *~
+dbpassword.txt
 pom.xml
 
