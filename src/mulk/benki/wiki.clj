@@ -2,7 +2,6 @@
   (:refer-clojure :exclude [distinct conj! case compile drop take sort disj!
                             resultset-seq])
   (:use [clojure         repl pprint]
-        [clojure.contrib error-kit]
         [hiccup core     page-helpers]
         [mulk.benki      util db]
         [clojure.core.match.core
