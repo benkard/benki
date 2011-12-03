@@ -1,0 +1,7 @@
+;;;; -*- mode: clojure; coding: utf-8 -*-
+
+{:database {:classname "org.postgresql.Driver"
+            :subprotocol "postgresql"
+            :subname "//localhost:5432/benki"
+            :user "benki"
+            :password ""}}

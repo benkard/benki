@@ -6,6 +6,6 @@ lib
 static/3rdparty
 
 *~
-dbpassword.txt
+config.sexp
 pom.xml
 

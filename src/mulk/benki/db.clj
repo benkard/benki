@@ -1,15 +1,11 @@
 (ns mulk.benki.db
   (:refer-clojure)
-  (:use mulk.benki.util)
+  (:use [mulk.benki util config])
   (:require [clojure.java.jdbc :as sql]))
 
 
 (def ^:private db
-  {:classname "org.postgresql.Driver"
-   :subprotocol "postgresql"
-   :subname "//localhost:5432/benki"
-   :user "benki"
-   :password (clojure.string/trim (slurp "dbpassword.txt"))})
+  (:database benki-config))
 
 (defn call-with-db [thunk]
   (sql/with-connection db
