@@ -3,7 +3,7 @@
   (:use [clojure         core repl pprint]
         noir.core
         [hiccup core     page-helpers]
-        [mulk.benki      util])
+        [mulk.benki      util config])
   (:require [noir server options]
             [mulk.benki wiki auth]
             [ring.middleware.file]
@@ -22,7 +22,7 @@
 
 (defn wrap-base-uri [handler]
   (fn [request]
-    (let [base-uri "http://localhost:3001"]
+    (let [base-uri (:base-uri benki-config)]
       (with-base-url base-uri
         ((noir.options/wrap-options handler {:base-url base-uri}) request)))))
 
@@ -31,7 +31,7 @@
   (noir.server/add-middleware #(wrap-base-uri %))
   (noir.server/add-middleware #(ring.middleware.file/wrap-file % "static")))
 
-(defonce server (doto (Thread. #(noir.server/start 3001))
+(defonce server (doto (Thread. #(noir.server/start (:web-port benki-config)))
                   (.setDaemon true)
                   (.start)))
 

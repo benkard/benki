@@ -4,4 +4,6 @@
             :subprotocol "postgresql"
             :subname "//localhost:5432/benki"
             :user "benki"
-            :password ""}}
+            :password ""}
+ :base-uri "http://localhost:3001"
+ :web-port 3001}
