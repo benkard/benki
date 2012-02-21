@@ -15,8 +15,6 @@
                  [org.clojure/java.jdbc "0.1.1"]
                  [org.clojure/java.data "0.0.1-SNAPSHOT"]
                  [org.clojure/java.jmx "0.2-SNAPSHOT"]
-                 [org.clojure/math.combinatorics "0.0.3-SNAPSHOT"]
-                 [org.clojure/math.numeric-tower "0.0.2-SNAPSHOT"]
                  [org.clojure/test.generative "0.1.3"]
                  ;;[org.clojure/test.benchmark "0.1.0-SNAPSHOT"]
                  [org.clojure/tools.cli "0.2.1"]
@@ -25,29 +23,17 @@
                  [org.clojure/tools.namespace "0.1.0"]
                  [org.clojure/tools.nrepl "0.0.5"]
                  [org.clojure/tools.trace "0.7.1"]
-                 ;;[org.clojure.contrib/standalone "1.3.0-SNAPSHOT"]
 
                  ;; Web app utilities
                  [ring "1.0.0-RC5"]
                  [noir "1.2.1"]
                  [hiccup "0.3.7"]
                  [cssgen "0.2.5-SNAPSHOT"]
-                 ;;[clj-http "0.2.3"]
 
                  ;; Relational database access
-                 [clojureql "1.1.0-SNAPSHOT"]
                  [korma "0.2.1"]
                  [postgresql "9.0-801.jdbc4"]
                  [org.clojure/java.jdbc "0.1.1"]
-
-                 ;; Other databases
-                 ;;[com.sleepycat/je "4.1.10"]  ;4.0.96 if the Oracle Maven repo scares you
-                 [tokyocabinet "1.24.0"]
-                 ;;[com.h2database/h2 "1.3.161"]
-                 ;;[hypergraphdb/hypergraphdb "1.1"]     ;no Maven artifact
-                 ;;[org.clojars.gregburd/cupboard "1.0.0-SNAPSHOT"]
-                 ;;[fleetdb-client "0.2.2"]
-                 ;;[uk.co.magus.fourstore/4store-client "1.0"]
 
                  ;; Additional libraries
                  ;;[clj-oauth2 "0.0.1"]
