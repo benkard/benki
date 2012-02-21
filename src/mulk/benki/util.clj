@@ -1,7 +1,7 @@
 (ns mulk.benki.util
   (:refer-clojure)
   (:use [hiccup core page-helpers]
-        [clojure.core.match.core :only [match]]
+        [clojure.core.match :only [match]]
         noir.core)
   (:require [noir.session  :as session]
             [noir.request  :as request]

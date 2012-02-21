@@ -3,7 +3,6 @@
   :dependencies [[org.clojure/clojure "1.3.0"]
 
                  ;; Clojure Contrib
-                 [org.clojure.contrib/repl-utils "1.3.0-SNAPSHOT"]
                  [org.clojure/algo.generic "0.1.0-SNAPSHOT"]
                  [org.clojure/algo.monads "0.1.0"]
                  [org.clojure/core.logic "0.6.5"]

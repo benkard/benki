@@ -1,10 +1,9 @@
 (ns mulk.benki.auth
   (:refer-clojure)
   (:use [clojure         core repl pprint]
-        [clojure.contrib repl-utils]
         [hiccup core     page-helpers]
         [mulk.benki      util db]
-        [clojure.core.match.core
+        [clojure.core.match
          :only [match]]
         [noir            core]
         [clojure.java.jdbc :only [transaction do-commands]])

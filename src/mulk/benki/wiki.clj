@@ -4,7 +4,7 @@
   (:use [clojure         repl pprint]
         [hiccup core     page-helpers]
         [mulk.benki      util db]
-        [clojure.core.match.core
+        [clojure.core.match
          :only [match]]
         [clojureql core predicates]
         noir.core)
