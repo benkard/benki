@@ -13,10 +13,6 @@
   (:import [org.jsoup.Jsoup]))
 
 
-(def page_revisions (table :wiki_page_revisions))
-(def pages          (table :wiki_pages))
-
-
 (defn- html-insert-wikilinks [text]
   (clojure.string/replace
    text
