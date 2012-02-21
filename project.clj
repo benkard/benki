@@ -7,7 +7,7 @@
                  [org.clojure/algo.generic "0.1.0-SNAPSHOT"]
                  [org.clojure/algo.monads "0.1.0"]
                  [org.clojure/core.logic "0.6.5"]
-                 [org.clojure/core.match "0.2.0-SNAPSHOT"]
+                 [org.clojure/core.match "0.2.0-alpha9"]
                  [org.clojure/core.unify "0.5.1"]
                  [org.clojure/data.codec "0.1.0"]
                  [org.clojure/data.finger-tree "0.0.2-SNAPSHOT"]
@@ -74,9 +74,10 @@
                  "openid4java-releases"
                  {:url "http://oss.sonatype.org/content/repositories/openid4java-releases/"
                   :snapshots false},
-                 "clojars"
-                 {:url "http://clojars.org/repo/"
-                  :snapshots true},
+                 ;;"clojars"
+                 ;;{:url "http://clojars.org/repo/"
+                 ;; :snapshots true
+                 ;;},
                  "oracle"
                  {:url "http://download.oracle.com/maven/"
                   :snapshots false}}
