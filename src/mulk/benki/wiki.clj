@@ -6,7 +6,6 @@
         [mulk.benki      util db]
         [clojure.core.match
          :only [match]]
-        [clojureql core predicates]
         noir.core)
   (:require [noir.session      :as session]
             [noir.response     :as response]
