@@ -6,11 +6,16 @@
         [mulk.benki      util db]
         [clojure.core.match
          :only [match]]
+        [clojureql core predicates]
         noir.core)
   (:require [noir.session      :as session]
             [noir.response     :as response]
             [clojure.java.jdbc :as sql])
   (:import [org.jsoup.Jsoup]))
+
+
+(def page_revisions (table :wiki_page_revisions))
+(def pages          (table :wiki_pages))
 
 
 (defn- html-insert-wikilinks [text]

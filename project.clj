@@ -26,6 +26,7 @@
                  [cssgen "0.2.5"]
 
                  ;; Relational database access
+                 [clojureql "1.0.3"]
                  [korma "0.2.1"]
                  [postgresql "9.0-801.jdbc4"]
                  [org.clojure/java.jdbc "0.1.1"]
