@@ -3,20 +3,15 @@
   :dependencies [[org.clojure/clojure "1.3.0"]
 
                  ;; Clojure Contrib
-                 [org.clojure/algo.generic "0.1.0-SNAPSHOT"]
+                 [org.clojure/algo.generic "0.1.0"]
                  [org.clojure/algo.monads "0.1.0"]
                  [org.clojure/core.logic "0.6.5"]
                  [org.clojure/core.match "0.2.0-alpha9"]
                  [org.clojure/core.unify "0.5.1"]
                  [org.clojure/data.codec "0.1.0"]
-                 [org.clojure/data.finger-tree "0.0.2-SNAPSHOT"]
-                 ;;[org.clojure/data.xml.root "0.0.1-SNAPSHOT" :type "pom"]
                  [org.clojure/data.zip "0.1.0"]
                  [org.clojure/java.jdbc "0.1.1"]
-                 [org.clojure/java.data "0.0.1-SNAPSHOT"]
-                 [org.clojure/java.jmx "0.2-SNAPSHOT"]
                  [org.clojure/test.generative "0.1.3"]
-                 ;;[org.clojure/test.benchmark "0.1.0-SNAPSHOT"]
                  [org.clojure/tools.cli "0.2.1"]
                  [org.clojure/tools.logging "0.2.3"]
                  [org.clojure/tools.macro "0.1.1"]
@@ -25,10 +20,10 @@
                  [org.clojure/tools.trace "0.7.1"]
 
                  ;; Web app utilities
-                 [ring "1.0.0-RC5"]
+                 [ring "1.0.0"]
                  [noir "1.2.1"]
                  [hiccup "0.3.7"]
-                 [cssgen "0.2.5-SNAPSHOT"]
+                 [cssgen "0.2.5"]
 
                  ;; Relational database access
                  [korma "0.2.1"]
