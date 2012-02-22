@@ -43,6 +43,22 @@
     (doseq [node (-> doc (.select ".benkilink") (.unwrap))])
     (-> doc (.select "body") (.html))))
 
+(def ^{:private true} wiki-page
+  {:head 
+    ;; Aloha Editor
+   (list
+    [:link {:rel "stylesheet"
+            :href (resolve-uri "/3rdparty/alohaeditor/aloha/css/aloha.css")}]
+    [:script {:type "text/javascript"
+              :src (resolve-uri "/3rdparty/alohaeditor/aloha/lib/aloha.js")
+              :data-aloha-plugins "common/format,common/highlighteditables,common/list,common/link,common/undo,common/paste,common/block"}]
+    ;; Custom wiki page stuff 
+    [:script {:type "text/javascript"
+              :src (resolve-uri "/js/wiki.js")}])})
+
+(def ^{:private true} plain-page
+  {})
+
 
 (defpage "/wiki" []
   ;; NB. response/redirect calls options/resolve-uri.
@@ -57,7 +73,8 @@
                                  (with-dbt (first @(select page_revisions
                                                            (where (=* :id (Integer/parseInt revision-id))))))
                                  (with-dbt (first @revisions-with-title)))]
-      (layout (fmt nil "~A — Benki~@[/~A~] " title revision-id)
+      (layout wiki-page
+              (fmt nil "~A — Benki~@[/~A~] " title revision-id)
               (if revision
                 [:div#wiki-page-content (wikilinkify (:content revision))]
                 [:div#wiki-page-content [:p "This page does not exist yet."]])
@@ -78,7 +95,8 @@
                                ORDER BY date DESC"
                              "Home"))]
       (with-dbt
-        (layout (fmt nil "Revision list — ~A — Benki" title)
+        (layout plain-page
+                (fmt nil "Revision list — ~A — Benki" title)
           [:table {:style ""}
            [:thead
             [:th "Date"]

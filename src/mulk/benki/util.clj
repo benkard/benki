@@ -23,22 +23,14 @@
 
 
 ;; defpartial is just defn + html.
-(defpartial layout [title & content]
+(defpartial layout [kind title & content]
   (html5 {:xml? true}
    [:head
     [:title title]
     ;; jQuery
     [:script {:type "text/javascript"
               :src (resolve-uri "/3rdparty/jquery/jquery-1.7.min.js")}]
-    ;; Aloha Editor
-    [:link {:rel "stylesheet"
-            :href (resolve-uri "/3rdparty/alohaeditor/aloha/css/aloha.css")}]
-    [:script {:type "text/javascript"
-              :src (resolve-uri "/3rdparty/alohaeditor/aloha/lib/aloha.js")
-              :data-aloha-plugins "common/format,common/highlighteditables,common/list,common/link,common/undo,common/paste,common/block"}]
-    ;; JavaScript
-    [:script {:type "text/javascript"
-              :src (resolve-uri "/js/wiki.js")}]]
+    (:head kind)]
    [:body [:h1 title]
     content]))
 
