@@ -22,7 +22,7 @@
 
 (defn wrap-base-uri [handler]
   (fn [request]
-    (let [base-uri (:base-uri benki-config)]
+    (let [base-uri (:base-uri @benki-config)]
       (hiccup.core/with-base-url base-uri
         ((noir.options/wrap-options handler {:base-url base-uri}) request)))))
 
@@ -31,7 +31,7 @@
   (noir.server/add-middleware #(wrap-base-uri %))
   (noir.server/add-middleware #(ring.middleware.file/wrap-file % "static")))
 
-(defonce server (doto (Thread. #(noir.server/start (:web-port benki-config)))
+(defonce server (doto (Thread. #(noir.server/start (:web-port @benki-config)))
                   (.setDaemon true)
                   (.start)))
 

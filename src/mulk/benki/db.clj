@@ -4,11 +4,11 @@
   (:require [clojure.java.jdbc :as sql]))
 
 
-(def ^:private db
-  (:database benki-config))
+(defn ^:private db []
+  (:database @benki-config))
 
 (defn call-with-db [thunk]
-  (sql/with-connection db
+  (sql/with-connection (db)
     (thunk)))
 
 (defmacro with-db [& body]

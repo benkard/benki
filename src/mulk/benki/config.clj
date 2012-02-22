@@ -2,4 +2,4 @@
   (:refer-clojure))
 
 (def benki-config
-  (read-string (slurp "config.sexp")))
+  (atom (read-string (slurp "config.sexp"))))
