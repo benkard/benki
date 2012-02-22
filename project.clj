@@ -20,7 +20,7 @@
                  [org.clojure/tools.trace "0.7.1"]
 
                  ;; Web app utilities
-                 [ring "1.0.0"]
+                 [ring "1.0.2"]
                  [noir "1.2.1"]
                  [hiccup "0.3.7"]
                  [cssgen "0.2.5"]
