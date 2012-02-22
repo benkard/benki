@@ -1,0 +1,103 @@
+                  BENKARD AFFERO GENERAL PUBLIC LICENSE
+                       Version 3, 21 Februray 2012
+
+
+Copyright 2012, Matthias Andreas Benkard.
+
+<mailto:bgpl@benkard.de>
+<http://matthias.benkard.de/>
+
+
+Definitions.
+
+THE BENKARD AFFERO GENERAL PUBLIC LICENSE (BAGPLv3), version 3, refers
+to the license resulting by combining the GNU Affero General Public
+License, version 3, as published by the Free Software Foundation, with
+the additional rights granted in this document.  Any actions not
+expressly permitted under the exceptions described in this document
+are permitted if and only if they are permitted under the GNU Affero
+General Public License, version 3, subject to the terms and conditions
+therein.
+
+Any terms used, but not defined in the Benkard Affero General Public
+License are understood to refer to the corresponding terms of the GNU
+Affero General Public License, version 3.
+
+
+License grant.
+
+You are permitted to modify, convey, and use any covered work under
+the terms and conditions of the GNU Affero General Public License,
+version 3.
+
+AS A SPECIAL EXCEPTION TO THE GNU AFFERO GENERAL PUBLIC LICENSE,
+VERSION 3, you are hereby granted the right to link or combine any
+covered work with works licensed under one of the licenses specified
+in the "List of Excepted Licenses" provided below ("Excepted Works"),
+and convey the combined work under the terms and conditions of the
+Benkard Affero General Public License, provided that you also agree to
+the additional terms and conditions imposed by the respective version
+of the Benkard Affero General Public License (see "Restrictions").
+
+
+Restrictions.
+
+1. When conveying a covered work, all Excepted Works must be conveyed
+   along with it under the terms and conditions of the respective
+   Excepted Licenses, with the additional requirement that their
+   complete and unmodified machine-readable source code is included in
+   the distribution and licensed under the respective Excepted
+   Licenses.
+
+2. Whenever you are required to provide the Corresponding Source of a
+   covered work, the terms of item (1) apply correspondingly.  In
+   particular, in such a case, the Corresponding Source must be
+   accompanied by the complete and unmodified machine-readable source
+   code of each and every Excepted Work.
+
+3. You otherwise obey the conditions of the GNU Affero General Public
+   License, version 3, in all respects, regarding the covered work,
+   including (but not limited to) any obligations of conveying the
+   Corresponding Source in the situations described by the GNU Affero
+   General Public License, version 3, as well as any obligations
+   arising from sections 4 through 13.
+
+4. Whenever you convey a covered work, or its Corresponding Source,
+   the distribution must be accompanied by the full text of the
+   Benkard Affero General Public License.
+
+5. All modifications to a covered work must be licensed under the
+   Benkard Affero General Public License.
+
+
+List of Excepted Licenses
+
+ * Common Public License,  version 1.0,
+ * Eclipse Public License, version 1.0,
+ * OpenSSL license         (as of 2012)
+ * Original SSLeay license (as of 2012)
+
+The Common Public License and Eclipse Public License are understood as
+those published by the Eclipse Foundation <http://www.eclipse.org/>.
+
+The OpenSSL license and Original SSLeay license are understood as
+those published by the OpenSSL Project <http://www.openssl.org/>.
+
+
+Clarifications.
+
+1. This exception does not restrict your rights granted by the GNU
+   Affero General Public License, version 3, in any way, including the
+   right to convey any covered work under the terms of the GNU Affero
+   General Public License, version 3, alone, with no inclusion of this
+   exception.  In case you choose to do so, however, this exception
+   does not apply to the conveyance in any way.  In particular, such a
+   conveyance must comply strictly with the GNU Affero General Public
+   License, version 3.
+
+2. Licenses listed as Excepted Licenses are Excepted Licenses only in
+   their original, unmodified form.  In particular, any advertising
+   clauses different in wording from the original OpenSSL license or
+   SSLeay license or referring to different entities than mentioned in
+   the original OpenSSL license or SSLeay license are incompatible
+   with the Benkard Affero General Public License.
