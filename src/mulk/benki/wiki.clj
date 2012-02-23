@@ -85,13 +85,15 @@
 (defpage "/wiki/:title/revisions" {title :title}
   (with-auth
     (let [revisions (with-dbt
-                      (query "SELECT r.*
+                      (query "SELECT r.*, u.first_name
                                 FROM wiki_page_revisions r
                                 JOIN (SELECT * FROM wiki_page_revisions
                                               WHERE title = ?
                                               ORDER BY date DESC
                                               LIMIT 1) pr
                                   ON (pr.page = r.page)
+                                JOIN users u
+                                  ON u.id = r.author
                                ORDER BY date DESC"
                              "Home"))]
       (with-dbt
@@ -100,7 +102,8 @@
           [:table {:style ""}
            [:thead
             [:th "Date"]
-            [:th "Title"]]
+            [:th "Title"]
+            [:th "Author"]]
            [:tbody
             (for [rev revisions]
               [:tr
@@ -108,7 +111,8 @@
                                      (:title rev)
                                      (fmt nil "?revision=~a" (:id rev)))}
                      (:date rev)]]
-               [:td (:title rev)]])]])))))
+               [:td (:title rev)]
+               [:td (:first_name rev)]])]])))))
 
 (defn insert-empty-page []
   (sql/with-query-results results ["INSERT INTO wiki_pages DEFAULT VALUES RETURNING *"]
