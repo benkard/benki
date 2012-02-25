@@ -18,25 +18,7 @@ mulk.savePage = function() {
             console.log('Error saving content.');
         }
     });
-    $('#wiki-page-content').removeAttr('contenteditable');
 };
-
-/*
-jQuery(function ($) {
-    $('#wiki-page-content').on('blur', function() {
-        mulk.savePage();
-        document.designMode = 'off';
-    });
-    $('body').on('click', function() {
-        mulk.savePage();
-        document.designMode = 'off';
-    });
-    $('#wiki-page-content').on('dblclick', function() {
-        document.designMode = 'on';
-    });
-});
-*/
-
 
 jQuery(function ($) {
     if (!window.Aloha) {
@@ -76,17 +58,12 @@ jQuery(function ($) {
 
     Aloha.ready(function() {
 	var $$ = Aloha.jQuery;
-        var editable;
-	$$('#wiki-page-content').aloha();
-        editable = Aloha.editables[0];
-        editable.disable();
 	$('#wiki-page-content').on('blur', function() {
             mulk.savePage();
-            editable.disable();
+            $$('#wiki-page-content').mahalo();
         });
         $('#wiki-page-content').dblclick(function() {
-            editable.enable();
+            $$('#wiki-page-content').aloha();
         });
     });
 });
-
