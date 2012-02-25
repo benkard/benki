@@ -67,10 +67,21 @@
     (session/put! :discovered discovered)
     (redirect (.getDestinationUrl authreq true))))
 
+(def login-page-layout
+  {:head (list
+          [:link {:type "text/css", :rel "stylesheet", :href "/3rdparty/openid-selector/css/openid.css"}]
+          [:script {:type "text/javascript", :src "/3rdparty/openid-selector/js/openid-jquery.js"}]
+          [:script {:type "text/javascript", :src "/3rdparty/openid-selector/js/openid-en.js"}]
+          [:script {:type "text/javascript", :src "/js/openid-login.js"}]
+          )})
+
 (defpage "/login" []
-  (layout "Benki Login"
-    [:p "Please enter your OpenID:"]
+  (layout login-page-layout "Benki Login"
     [:form {:action (resolve-uri "/login/authenticate"),
             :method "GET"}
-     [:input {:type "text", :name "openid"}]
-     [:input {:type "submit"}]]))
+     [:div {:id "openid_choice"}
+      [:p "Please select your OpenID provider:"]
+      [:div {:id "openid_btns"}]]
+     [:div {:id "openid_input_area"}
+      [:input {:type "text", :name "openid", :id "openid_identifier"}]
+      [:input {:type "submit"}]]]))
