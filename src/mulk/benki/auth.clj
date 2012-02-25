@@ -69,10 +69,10 @@
 
 (def login-page-layout
   {:head (list
-          [:link {:type "text/css", :rel "stylesheet", :href "/3rdparty/openid-selector/css/openid.css"}]
-          [:script {:type "text/javascript", :src "/3rdparty/openid-selector/js/openid-jquery.js"}]
-          [:script {:type "text/javascript", :src "/3rdparty/openid-selector/js/openid-en.js"}]
-          [:script {:type "text/javascript", :src "/js/openid-login.js"}]
+          [:link {:type "text/css", :rel "stylesheet", :href (resolve-uri "/3rdparty/openid-selector/css/openid.css")}]
+          [:script {:type "text/javascript", :src (resolve-uri "/3rdparty/openid-selector/js/openid-jquery.js")}]
+          [:script {:type "text/javascript", :src (resolve-uri "/3rdparty/openid-selector/js/openid-en.js")}]
+          [:script {:type "text/javascript", :src (resolve-uri "/js/openid-login.js")}]
           )})
 
 (defpage "/login" []
