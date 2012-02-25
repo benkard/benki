@@ -59,11 +59,19 @@ jQuery(function ($) {
 
     Aloha.ready(function() {
 	var $$ = Aloha.jQuery;
-	$('#wiki-page-content').on('blur', function() {
+
+        $('html').click(function() {
             mulk.savePage();
             $$('#wiki-page-content').mahalo();
         });
-        $('#wiki-page-content').dblclick(function() {
+        $('#wiki-page-content').click(function(event) {
+            event.stopPropagation();
+        });
+        $('.aloha-floatingmenu').click(function(event) {
+            event.stopPropagation();
+        });
+
+        $('#wiki-page-content').click(function() {
             $$('#wiki-page-content').aloha();
         });
     });
