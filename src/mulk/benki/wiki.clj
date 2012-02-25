@@ -51,7 +51,7 @@
             :href (resolve-uri "/3rdparty/alohaeditor/aloha/css/aloha.css")}]
     [:script {:type "text/javascript"
               :src (resolve-uri "/3rdparty/alohaeditor/aloha/lib/aloha.js")
-              :data-aloha-plugins "common/format,common/highlighteditables,common/list,common/link,common/undo,common/paste,common/block"}]
+              :data-aloha-plugins "common/format,common/highlighteditables,common/list,common/link,common/undo,common/paste,common/block,common/table"}]
     ;; Custom wiki page stuff 
     [:script {:type "text/javascript"
               :src (resolve-uri "/js/wiki.js")}])})
