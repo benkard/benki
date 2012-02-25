@@ -60,7 +60,7 @@
 (defpage "/login/return" []
   (return-from-openid-provider))
 
-(defpage "/login/authenticate" {openid :openid}
+(defpage "/login/authenticate" {openid :openid_identifier}
   (let [discoveries (.discover     manager openid)
         discovered  (.associate    manager discoveries)
         authreq     (.authenticate manager discovered (resolve-uri "/login/return"))]
@@ -83,5 +83,5 @@
       [:p "Please select your OpenID provider:"]
       [:div {:id "openid_btns"}]]
      [:div {:id "openid_input_area"}
-      [:input {:type "text", :name "openid", :id "openid_identifier"}]
+      [:input {:type "text", :name "openid_identifier", :id "openid_identifier"}]
       [:input {:type "submit"}]]]))
