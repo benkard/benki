@@ -21,42 +21,6 @@ mulk.savePage = function() {
 };
 
 jQuery(function ($) {
-    if (!window.Aloha) {
-	window.Aloha = {};		
-    }
-    window.Aloha.settings = {
-	logLevels: {'error': true, 'warn': true, 'info': true, 'debug': false},
-	errorhandling : false,
-	ribbon: false,
-
-	"i18n": {
-	    "current": "de"
-	},
-	"repositories": {
-            linklist: "/3rdparty/alohaeditor/aloha/plugins/common/link/extra"
-	},
-	"plugins": {
-	    "format": {
-		config : [ 'b', 'i','sub','sup'],
-		editables : {
-		    '#title'    : [ ],
-		    'div'       : [ 'b', 'i', 'del', 'sub', 'sup'  ],
-		    '.article'  : [ 'b', 'i', 'p', 'title', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'pre', 'removeFormat']
-		}
-	    },
-	    "list": {
-	    },
-	    "link": {
-		config : [ 'a' ],
-	    },
-	    "table": {
-		config : [ ],
-	    },
-	    "image": {
-	    }
-	}
-    };
-
     Aloha.ready(function() {
 	var $$ = Aloha.jQuery;
 
