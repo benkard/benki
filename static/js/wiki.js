@@ -33,6 +33,7 @@ jQuery(function ($) {
 	    "current": "de"
 	},
 	"repositories": {
+            linklist: "/3rdparty/alohaeditor/aloha/plugins/common/link/extra"
 	},
 	"plugins": {
 	    "format": {
