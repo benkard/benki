@@ -70,6 +70,9 @@ jQuery(function ($) {
         $('.aloha-floatingmenu').click(function(event) {
             event.stopPropagation();
         });
+        $('.aloha-sidebar-bar').click(function(event) {
+            event.stopPropagation();
+        });
 
         $('#wiki-page-content').click(function() {
             $$('#wiki-page-content').aloha();
