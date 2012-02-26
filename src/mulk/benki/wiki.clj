@@ -47,7 +47,7 @@
    (fn [x]
      (let [parens? (and (.startsWith x "(") (.endsWith x ")"))
            uri     (if parens?
-                     (subs x 1 (- (count x) 2))
+                     (subs x 1 (- (count x) 1))
                      x)]
        (fmt nil "~a<a href=\"~a\" class=\"benkiautohref\">~a</a>~a"
             (if parens? "(" "")
