@@ -4,6 +4,8 @@
         [hiccup core     page-helpers]
         [clojureql       predicates]
         [clojure.core.match :only [match]]
+        [hiccup.core        :only [escape-html]]
+        [ring.util.codec    :only [url-encode]]
         noir.core
         [mulk.benki util db auth])
   (:require [clojure.algo.monads  :as m]
@@ -11,7 +13,8 @@
             [clojure.string       :as string]
             [clojureql.core       :as cq]
             [noir.request         :as request]
-            [noir.session         :as session])
+            [noir.session         :as session]
+            hiccup.core)
   (:import [org.jsoup.Jsoup]))
 
 (def bookmark_tags (cq/table :bookmark_tags))
@@ -34,10 +37,17 @@
                (cq/where (=* :visibility "public")))))
 
 
+
+(defn htmlize-description [text]
+  (let [input (escape-html text)]
+    (map (fn [x] [:p {} x]) (string/split text #"\n\s*?\n"))))
+
 (defpage "/marx" {}
   (let [user (session/get :user)
         marks (-> bookmarks
                   (cq/join users (=* :bookmarks.owner :users.id))
+                  (cq/project [:bookmarks.* :users.first_name])
+                  ;;(cq/rename {:users.id :uid})
                   (restrict-visibility (session/get :user))
                   (cq/sort [:date#desc]))]
     (with-dbt
@@ -48,12 +58,12 @@
           (for [mark @marks]
             [:li {:class "bookmark"}
              [:h2 {:class "bookmark-title"}
-              [:a {:href (:uri mark)}
-               (:title mark)]]
+              [:a {:href (escape-html (:uri mark))}
+               (escape-html (:title mark))]]
              [:p {:class "bookmark-date"}
-              (:date mark)]
+              (escape-html (:date mark))]
              [:p {:class "bookmark-description"}
-              (:description mark)]])]]))))
+              (htmlize-description (:description mark))]])]]))))
 
 (defmacro ignore-errors [& body]
   `(try (do ~@body)
