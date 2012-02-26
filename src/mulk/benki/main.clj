@@ -5,7 +5,7 @@
         [hiccup core     page-helpers]
         [mulk.benki      util config])
   (:require [noir server options]
-            [mulk.benki wiki auth]
+            [mulk.benki wiki auth book_marx]
             [ring.middleware.file]
             [noir.session      :as session]))
 

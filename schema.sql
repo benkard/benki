@@ -40,5 +40,26 @@ CREATE TABLE wiki_page_revisions(
   CHECK (format IN ('mulkwiki', 'html5', 'xhtml5', 'markdown', 'textile', 'muse', 'bbcode'))
 );
 
+
+CREATE TABLE bookmarks(
+  id          SERIAL    NOT NULL,
+  owner       INTEGER,
+  date        TIMESTAMP DEFAULT now(),
+  uri         VARCHAR   NOT NULL,
+  title       VARCHAR,
+  description VARCHAR,
+  visibility  VARCHAR,
+  PRIMARY KEY(id),
+  FOREIGN KEY(owner) REFERENCES users,
+  CHECK (visibility IN ('private', 'protected', 'public'))
+);
+
+CREATE TABLE bookmark_tags(
+  bookmark INTEGER NOT NULL,
+  tag      VARCHAR NOT NULL,
+  PRIMARY KEY(bookmark, tag),
+  FOREIGN KEY(bookmark) REFERENCES bookmarks
+);
+
 ROLLBACK;
 --COMMIT;

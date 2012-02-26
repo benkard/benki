@@ -41,7 +41,10 @@
 
 (defn link [& args]
   (match [(vec args)]
-    [[:wiki title & xs]] (fresolve "/wiki/~a~@[~a~]" title (first xs))))
+    [[:login]]           (fresolve "/login")
+    [[:marx]]            (fresolve "/marx")
+    [[:wiki title & xs]] (fresolve "/wiki/~a~@[~a~]" title (first xs))
+    ))
 
 (defn call-with-auth [thunk]
   (if (session/get :user)
@@ -51,3 +54,6 @@
 
 (defmacro with-auth [& body]
   `(call-with-auth (fn [] ~@body)))
+
+(defn redirect [x]
+  {:status 302, :headers {"Location" x}, :body ""})

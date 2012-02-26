@@ -18,10 +18,6 @@
 (defonce manager (ConsumerManager.))
 
 
-(defn redirect [x]
-  {:status 302, :headers {"Location" x}, :body ""})
-
-
 (defn return-from-openid-provider []
   (let [parlist      (ParameterList. (:query-params (request/ring-request)))
         discovered   (session/get :discovered)
@@ -79,6 +75,8 @@
     )})
 
 (defpage "/login" []
+  (session/flash-put! (or (session/flash-get)
+                          (get-in (request/ring-request) [:headers "Referer"])))
   (layout login-page-layout "Benki Login"
     [:form {:action (resolve-uri "/login/authenticate"),
             :method "GET"
