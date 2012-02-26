@@ -20,7 +20,8 @@
 
 (defn- tagsoup-map-text [fun tag-soup]
   (let [doc   (org.jsoup.Jsoup/parse tag-soup) ]
-    (doseq [node     (into [] (.select doc "*"))
+    (doseq [node     (into [] (.select doc ":not(a):not(a *)"))
+            ;; XPath: //*[not(ancestor-or-self::a)]
             subnode  (into [] (.childNodes node))]
       (when (instance? org.jsoup.nodes.TextNode subnode)
         (let [new-node (org.jsoup.nodes.Element.
