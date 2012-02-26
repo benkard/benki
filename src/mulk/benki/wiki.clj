@@ -18,14 +18,7 @@
 (def pages          (table :wiki_pages))
 
 
-(defn- html-insert-wikilinks [text]
-  (clojure.string/replace
-   text
-   #"\p{javaUpperCase}+\p{javaLowerCase}+\p{javaUpperCase}+\p{javaLowerCase}+\w+"
-   (fn [x] (fmt nil "<a href=\"~a\" class=\"benkilink\">~a</a>" (link :wiki x) x))))
-
-
-(defn- wikilinkify [tag-soup]
+(defn- tagsoup-map-text [fun tag-soup]
   (let [doc   (org.jsoup.Jsoup/parse tag-soup) ]
     (doseq [node     (into [] (.select doc "*"))
             subnode  (into [] (.childNodes node))]
@@ -33,14 +26,48 @@
         (let [new-node (org.jsoup.nodes.Element.
                         (org.jsoup.parser.Tag/valueOf "span")
                         "")]
-          (.html new-node (html-insert-wikilinks (.text subnode)))
+          (.html new-node (fun (.text subnode)))
           (.replaceWith subnode new-node)
           (.unwrap new-node))))
     (-> doc (.select "body") (.html))))
 
+(defn- html-insert-wikilinks [text]
+  (clojure.string/replace
+   text
+   #"\p{javaUpperCase}+\p{javaLowerCase}+\p{javaUpperCase}+\p{javaLowerCase}+\w+"
+   (fn [x] (fmt nil "<a href=\"~a\" class=\"benkilink\">~a</a>" (link :wiki x) x))))
+
+(defn- html-insert-hyperlinks [text]
+  (clojure.string/replace
+   text
+   ;; Regex taken from:
+   ;;   http://www.codinghorror.com/blog/2008/10/the-problem-with-urls.html
+   #"\(?\bhttps?://[-A-Za-z0-9+&@#/%?=~_()|!:,.;]*[-A-Za-z0-9+&@#/%=~_()|]"
+   (fn [x]
+     (let [parens? (and (.startsWith x "(") (.endsWith x ")"))
+           uri     (if parens?
+                     (subs x 1 (- (count subs) 2))
+                     x)]
+       (fmt nil "~a<a href=\"~a\" class=\"benkiautohref\">~a</a>~a"
+            (if parens? "(" "")
+            uri
+            uri
+            (if parens? ")" ""))))))
+
+(defn- wikilinkify [tag-soup]
+  (tagsoup-map-text html-insert-wikilinks tag-soup))
+
+(defn- hrefify [tag-soup]
+  (tagsoup-map-text html-insert-hyperlinks tag-soup))
+
 (defn- unwikilinkify [tag-soup]
   (let [doc (org.jsoup.Jsoup/parse tag-soup)]
     (doseq [node (-> doc (.select ".benkilink") (.unwrap))])
+    (-> doc (.select "body") (.html))))
+
+(defn- unhrefify [tag-soup]
+  (let [doc (org.jsoup.Jsoup/parse tag-soup)]
+    (doseq [node (-> doc (.select ".benkiautohref") (.unwrap))])
     (-> doc (.select "body") (.html))))
 
 (def ^{:private true} wiki-page
@@ -78,7 +105,7 @@
       (layout wiki-page
               (fmt nil "~A — Benki~@[/~A~] " title revision-id)
               (if revision
-                [:div#wiki-page-content (wikilinkify (:content revision))]
+                [:div#wiki-page-content (wikilinkify (hrefify (:content revision)))]
                 [:div#wiki-page-content [:p "This page does not exist yet."]])
               [:hr]
               [:div#wiki-page-footer {:style "text-align: right"}
@@ -127,7 +154,7 @@
                         (sort [:date#desc]))
           revision  (first @revisions)
           page      (:page revision)
-          dbcontent (unwikilinkify content)]
+          dbcontent (unhrefify (unwikilinkify content))]
       (if-let [user (Integer. (session/get :user))]
         (let [page-id (if page page (:id (insert-empty-page)))]
           (when-not (= (:content revision) dbcontent)  ;skip if content unmodified
@@ -135,5 +162,5 @@
              :wiki_page_revisions
              [:page   :title :content  :author :format]
              [page-id title  dbcontent user   "html5"]))
-          {:stetus 200, :headers {}, :body (wikilinkify dbcontent)})
+          {:stetus 200, :headers {}, :body (wikilinkify (hrefify dbcontent))})
         {:status 403, :headers {}, :body ""}))))
