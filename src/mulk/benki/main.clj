@@ -26,9 +26,17 @@
       (hiccup.core/with-base-url base-uri
         ((noir.options/wrap-options handler {:base-url base-uri}) request)))))
 
+(defn wrap-cache-control [handler]
+  (fn [request]
+    (let [response (handler request)]
+      (if (get-in response [:headers "Cache-Control"])
+        response
+        (assoc-in response [:headers "Cache-Control"] "no-cache")))))
+
 (do-once ::init
   (noir.server/add-middleware #(wrap-utf-8 %))
   (noir.server/add-middleware #(wrap-base-uri %))
+  (noir.server/add-middleware #(wrap-cache-control %))
   (noir.server/add-middleware #(ring.middleware.file/wrap-file % "static")))
 
 (defonce server (doto (Thread. #(noir.server/start (:web-port @benki-config)))
