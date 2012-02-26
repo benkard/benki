@@ -64,7 +64,7 @@
 
 (defpage "/wiki" []
   ;; NB. response/redirect calls options/resolve-uri.
-  (response/redirect "/wiki/Home"))
+  (response/redirect "/wiki/HomePage"))
 
 (defpage "/wiki/:title" {title :title, revision-id :revision}
   (with-auth
