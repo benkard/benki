@@ -60,8 +60,9 @@
              [:h2 {:class "bookmark-title"}
               [:a {:href (escape-html (:uri mark))}
                (escape-html (:title mark))]]
-             [:p {:class "bookmark-date"}
-              (escape-html (:date mark))]
+             [:p {:class "bookmark-date-and-owner"}
+              [:span {:class "bookmark-date"} (escape-html (:date mark))]
+              [:span {:class "bookmark-owner"} " by " (escape-html (:first_name mark))]]
              [:p {:class "bookmark-description"}
               (htmlize-description (:description mark))]])]]))))
 
