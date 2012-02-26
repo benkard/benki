@@ -31,7 +31,7 @@
     (let [response (handler request)]
       (if (get-in response [:headers "Cache-Control"])
         response
-        (assoc-in response [:headers "Cache-Control"] "no-store")
+        (assoc-in response [:headers "Cache-Control"] "no-cache")
         ;; no-cache, no-store, must-revalidate
         ;; Which one is the most appropriate?
         ;; (is must-revalidate even valid for server responses?)
