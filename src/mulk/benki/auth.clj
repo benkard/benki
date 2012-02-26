@@ -81,7 +81,8 @@
 (defpage "/login" []
   (layout login-page-layout "Benki Login"
     [:form {:action (resolve-uri "/login/authenticate"),
-            :method "GET"}
+            :method "GET"
+            :id     "openid_form"}
      [:div {:id "openid_choice"}
       [:p "Please select your OpenID provider:"]
       [:div {:id "openid_btns"}]]
