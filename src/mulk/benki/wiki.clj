@@ -48,7 +48,9 @@
     ;; Aloha Editor
    (list
     [:link {:rel "stylesheet"
-            :href (resolve-uri "/3rdparty/alohaeditor/aloha/css/aloha.css")}]
+            :href (resolve-uri "/3rdparty/alohaeditor/aloha/css/aloha.css")}])
+   :bottom
+   (list
     [:script {:type "text/javascript"
               :src (resolve-uri "/3rdparty/alohaeditor/aloha/lib/aloha.js")
               :data-aloha-plugins "common/format,common/highlighteditables,common/list,common/link,common/undo,common/paste,common/block,common/table"}]

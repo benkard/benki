@@ -68,12 +68,15 @@
     (redirect (.getDestinationUrl authreq true))))
 
 (def login-page-layout
-  {:head (list
-          [:link {:type "text/css", :rel "stylesheet", :href (resolve-uri "/3rdparty/openid-selector/css/openid.css")}]
-          [:script {:type "text/javascript", :src (resolve-uri "/3rdparty/openid-selector/js/openid-jquery.js")}]
-          [:script {:type "text/javascript", :src (resolve-uri "/3rdparty/openid-selector/js/openid-en.js")}]
-          [:script {:type "text/javascript", :src (resolve-uri "/js/openid-login.js")}]
-          )})
+  {:head
+   (list
+    [:link {:type "text/css", :rel "stylesheet", :href (resolve-uri "/3rdparty/openid-selector/css/openid.css")}])
+   :bottom
+   (list
+    [:script {:type "text/javascript", :src (resolve-uri "/3rdparty/openid-selector/js/openid-jquery.js")}]
+    [:script {:type "text/javascript", :src (resolve-uri "/3rdparty/openid-selector/js/openid-en.js")}]
+    [:script {:type "text/javascript", :src (resolve-uri "/js/openid-login.js")}]
+    )})
 
 (defpage "/login" []
   (layout login-page-layout "Benki Login"

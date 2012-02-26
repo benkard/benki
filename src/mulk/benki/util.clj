@@ -32,7 +32,8 @@
               :src (resolve-uri "/3rdparty/jquery/jquery-1.7.min.js")}]
     (:head kind)]
    [:body [:h1 title]
-    content]))
+    content
+    (:bottom kind)]))
 
 
 (defn fresolve [s & args]
