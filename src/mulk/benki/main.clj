@@ -31,9 +31,10 @@
     (let [response (handler request)]
       (if (get-in response [:headers "Cache-Control"])
         response
-        (assoc-in response [:headers "Cache-Control"] "must-revalidate")
-        ;;or:  no-cache   or:  no-store
-        ;;Which one is the most appropriate?
+        (assoc-in response [:headers "Cache-Control"] "no-store")
+        ;; no-cache, no-store, must-revalidate
+        ;; Which one is the most appropriate?
+        ;; (is must-revalidate even valid for server responses?)
         ))))
 
 (do-once ::init
