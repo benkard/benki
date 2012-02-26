@@ -97,7 +97,7 @@
                                 JOIN users u
                                   ON u.id = r.author
                                ORDER BY date DESC"
-                             "Home"))]
+                             title))]
       (with-dbt
         (layout plain-page
                 (fmt nil "Revision list — ~A — Benki" title)
