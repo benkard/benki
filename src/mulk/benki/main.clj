@@ -31,7 +31,10 @@
     (let [response (handler request)]
       (if (get-in response [:headers "Cache-Control"])
         response
-        (assoc-in response [:headers "Cache-Control"] "no-cache")))))
+        (assoc-in response [:headers "Cache-Control"] "must-revalidate")
+        ;;or:  no-cache   or:  no-store
+        ;;Which one is the most appropriate?
+        ))))
 
 (do-once ::init
   (noir.server/add-middleware #(wrap-utf-8 %))
