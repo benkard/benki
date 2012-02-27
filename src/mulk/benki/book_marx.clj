@@ -128,7 +128,7 @@
 (defpage "/marx/tags" {}
   (with-auth
     (with-dbt
-      (sql/with-query-results tags ["SELECT tag FROM bookmark_tags"]
+      (sql/with-query-results tags ["SELECT DISTINCT tag FROM bookmark_tags ORDER BY tag ASC"]
         (response/json (doall (map :tag tags)))))))
 
 (defmacro ignore-errors [& body]
