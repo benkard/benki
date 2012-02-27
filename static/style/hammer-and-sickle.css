@@ -1,0 +1,100 @@
+/* Copyright 2004, 2012, Matthias Andreas Benkard. */
+
+/* MAIN STUFF */
+
+body,html {
+	color: black;
+	background-color: #ff0000;
+	background-image: url(hammerandsickle-yellow-on-red.png);
+	background-position: 0 0;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+}
+
+a {
+	color: blue;
+	background-color: inherit;
+}
+
+a:visited {
+	color: navy;  /* dark blue */
+	background-color: inherit;
+}
+
+a:active {
+	color: #bbbbff;  /* light blue */
+	background-color: inherit;
+}
+
+#rtnv h3 {
+	font-size: 1em;
+}
+
+#stylechooser h2 {
+	font-size: 1em;
+	font-weight: bold;
+}
+
+#mainheading {
+	border-bottom: 0px solid none;
+}
+
+ul.bookmarx-list {
+        list-style-type: none;
+}
+
+h1 {
+	background-color: #ffbfbf;
+	background-image: url(hammerandsickle-yellow-on-red-bright.png);
+	background-position: 0 0;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	border: solid #bbccff;
+}
+
+h2 {
+	background-color: #ffbfbf;
+	background-image: url(hammerandsickle-yellow-on-red-bright.png);
+	background-position: 0 0;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+}
+
+#rtnv {
+	font-family: sans-serif, Arial, Helvetica;
+	color: inherit;
+	background-color: #ffbfbf;
+	background-image: url(hammerandsickle-yellow-on-red-bright.png);
+	background-position: 0 0;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	border: solid #bbccff;
+}
+
+.bookmark, #content {
+	/* border-right: 1px solid silver; */
+	color: inherit;
+	background-color: #ffbfbf;
+	background-image: url(hammerandsickle-yellow-on-red-bright.png);
+	background-position: 0 0;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	border: solid #bbccff;
+        margin: 10px;
+}
+
+p {
+	text-align: justify;
+}
+
+abbr, acronym {
+	cursor: help;
+}
+
+hr {
+	color: #bbccff;
+	background-color: #bbccff;
+	height: 2px;
+	/* border: 1px solid silver; */
+	border: 0px;
+}
