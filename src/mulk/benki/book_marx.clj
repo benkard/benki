@@ -28,6 +28,9 @@
   {:head (list
           [:link {:rel "stylesheet"
                   :href (resolve-uri "/style/hammer-and-sickle.css")
+                  :type "text/css"}]
+          [:link {:rel "stylesheet"
+                  :href (resolve-uri "/style/bookmarx.css")
                   :type "text/css"}])})
 (def bookmarx-submission-page
   {:head   (list
@@ -81,7 +84,7 @@
               [:span {:class "bookmark-date"}
                (escape-html (format-date (:date mark)))]
               [:span {:class "bookmark-owner"} " by " (escape-html (:first_name mark))]]
-             [:p {:class "bookmark-description"}
+             [:div {:class "bookmark-description"}
               (htmlize-description (:description mark))]])]]))))
 
 (defpage "/marx/tags" {}

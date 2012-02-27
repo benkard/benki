@@ -1,0 +1,10 @@
+.bookmark-date-and-owner {
+    font-style: oblique;
+    color: #555;
+    /* text-indent: 1.5em; */
+    /* margin-left: 1.5em; */
+}
+
+.bookmark-description {
+    margin-left: 1.5em;
+}
