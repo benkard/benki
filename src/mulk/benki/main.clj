@@ -16,7 +16,7 @@
           ctype     (get-in response [:headers "Content-Type"])
           utf8ctype (str ctype "; charset=utf-8")]
       (if (and ctype
-               (re-matches #"^(text/html|text/plain|application/xhtml+xml|text/xml)$" ctype))
+               (re-matches #"^(text/html|text/plain|application/xhtml+xml|text/xml|application/atom+xml)$" ctype))
         (assoc-in response [:headers "Content-Type"] utf8ctype)
         response))))
 

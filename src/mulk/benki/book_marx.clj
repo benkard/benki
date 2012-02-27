@@ -122,7 +122,7 @@
 
 (defpage "/marx/feed" {}
   (let [user  (session/get :user)]
-    (response/content-type "application/atom+xml"
+    (response/content-type "application/atom+xml; charset=UTF-8"
       (marx-feed-for-user user))))
 
 (defpage "/marx/tags" {}
