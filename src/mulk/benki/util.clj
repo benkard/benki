@@ -5,7 +5,8 @@
         noir.core)
   (:require [noir.session  :as session]
             [noir.request  :as request]
-            [noir.response :as response]))
+            [noir.response :as response])
+  (:import [java.text DateFormat]))
 
 
 (def fmt clojure.pprint/cl-format)
@@ -57,3 +58,7 @@
 
 (defn redirect [x]
   {:status 302, :headers {"Location" x}, :body ""})
+
+(defn format-date [x]
+  (.format (DateFormat/getDateTimeInstance DateFormat/FULL DateFormat/FULL)
+           x))

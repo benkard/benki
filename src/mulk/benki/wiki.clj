@@ -2,7 +2,8 @@
   (:refer-clojure :exclude [distinct conj! case compile drop take sort disj!
                             resultset-seq])
   (:use [clojure         repl pprint]
-        [hiccup core     page-helpers]
+        [hiccup          core page-helpers]
+        [hiccup.core     :only [escape-html]]
         [mulk.benki      util db]
         [clojure.core.match
          :only [match]]
@@ -140,7 +141,7 @@
                [:td [:a {:href (link :wiki
                                      (:title rev)
                                      (fmt nil "?revision=~a" (:id rev)))}
-                     (:date rev)]]
+                     (escape-html (format-date (:date rev)))]]
                [:td (:title rev)]
                [:td (:first_name rev)]])]])))))
 

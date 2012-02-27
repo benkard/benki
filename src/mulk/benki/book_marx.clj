@@ -16,8 +16,7 @@
             [noir.response        :as response]
             [noir.session         :as session]
             hiccup.core)
-  (:import [org.jsoup Jsoup]
-           [java.text DateFormat]))
+  (:import [org.jsoup Jsoup]))
 
 (def bookmark_tags (cq/table :bookmark_tags))
 (def bookmarks     (cq/table :bookmarks))
@@ -80,10 +79,7 @@
                (escape-html (:title mark))]]
              [:p {:class "bookmark-date-and-owner"}
               [:span {:class "bookmark-date"}
-               (escape-html
-                (.format
-                 (DateFormat/getDateTimeInstance DateFormat/FULL DateFormat/FULL)
-                 (:date mark)))]
+               (escape-html (format-date (:date mark)))]
               [:span {:class "bookmark-owner"} " by " (escape-html (:first_name mark))]]
              [:p {:class "bookmark-description"}
               (htmlize-description (:description mark))]])]]))))
