@@ -7,4 +7,15 @@
 
 .bookmark-description {
     margin-left: 1.5em;
+    margin-bottom: 1em;
 }
+
+/*
+.bookmark-description p {
+  margin-bottom: 0;
+}
+.bookmark-description p + p {
+  text-indent: 1.5em;
+  margin-top: 0;
+}
+*/
