@@ -13,6 +13,7 @@
             [clojure.string       :as string]
             [clojureql.core       :as cq]
             [noir.request         :as request]
+            [noir.response        :as response]
             [noir.session         :as session]
             hiccup.core)
   (:import [org.jsoup.Jsoup]))
@@ -25,8 +26,22 @@
 
 (def bookmarx-list-page
   {:head (list
-          [:link {:rel "stylesheet", "href" (resolve-uri "/style/hammer-and-sickle.css")}])})
-(def bookmarx-submission-page {})
+          [:link {:rel "stylesheet"
+                  :href (resolve-uri "/style/hammer-and-sickle.css")
+                  :type "text/css"}])})
+(def bookmarx-submission-page
+  {:head   (list
+            [:link {:rel "stylesheet"
+                    :href (resolve-uri "/style/hammer-and-sickle.css")
+                    :type "text/css"}]
+            [:link {:rel "stylesheet"
+                    :href (resolve-uri "/3rdparty/jquery-ui/css/ui-lightness/jquery-ui-1.8.18.custom.css")
+                    :type "text/css"}])
+   :bottom (list
+            [:script {:type "text/javascript"
+                      :src (resolve-uri "/3rdparty/jquery-ui/js/jquery-ui-1.8.18.custom.min.js")}]
+            [:script {:type "text/javascript"
+                      :src (resolve-uri "/js/bookmarx-submit.js")}])})
 
 (defn restrict-visibility [table user]
   (if user
@@ -67,6 +82,12 @@
               [:span {:class "bookmark-owner"} " by " (escape-html (:first_name mark))]]
              [:p {:class "bookmark-description"}
               (htmlize-description (:description mark))]])]]))))
+
+(defpage "/marx/tags" {}
+  (with-auth
+    (with-dbt
+      (sql/with-query-results tags ["SELECT tag FROM bookmark_tags"]
+        (response/json (doall (map :tag tags)))))))
 
 (defmacro ignore-errors [& body]
   `(try (do ~@body)
