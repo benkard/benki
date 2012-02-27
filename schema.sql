@@ -29,7 +29,7 @@ CREATE TABLE wiki_pages(
 CREATE TABLE wiki_page_revisions(
   id           SERIAL    NOT NULL,
   page         INTEGER   NOT NULL,
-  date         TIMESTAMP DEFAULT now(),
+  date         TIMESTAMP WITH TIME ZONE DEFAULT now(),
   title        VARCHAR,
   content      VARCHAR,
   author       INTEGER,
@@ -44,7 +44,7 @@ CREATE TABLE wiki_page_revisions(
 CREATE TABLE bookmarks(
   id          SERIAL    NOT NULL,
   owner       INTEGER,
-  date        TIMESTAMP DEFAULT now(),
+  date        TIMESTAMP WITH TIME ZONE DEFAULT now(),
   uri         VARCHAR   NOT NULL,
   title       VARCHAR,
   description VARCHAR,
