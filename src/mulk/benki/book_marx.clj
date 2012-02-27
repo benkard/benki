@@ -25,7 +25,7 @@
 
 (def bookmarx-list-page
   {:head (list
-          [:link {:rel "stylesheet", "href" "/style/hammer-and-sickle.css"}])})
+          [:link {:rel "stylesheet", "href" (resolve-uri "/style/hammer-and-sickle.css")}])})
 (def bookmarx-submission-page {})
 
 (defn restrict-visibility [table user]
