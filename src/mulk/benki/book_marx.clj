@@ -7,7 +7,7 @@
         [hiccup.core        :only [escape-html]]
         [ring.util.codec    :only [url-encode]]
         noir.core
-        [mulk.benki util db auth])
+        [mulk.benki util db auth config])
   (:require [clojure.algo.monads  :as m]
             [clojure.java.jdbc    :as sql]
             [clojure.string       :as string]
@@ -16,7 +16,11 @@
             [noir.response        :as response]
             [noir.session         :as session]
             hiccup.core)
-  (:import [org.jsoup Jsoup]))
+  (:import [org.jsoup         Jsoup]
+           [org.apache.abdera Abdera]))
+
+
+(defonce abdera (Abdera.))
 
 (def bookmark_tags (cq/table :bookmark_tags))
 (def bookmarks     (cq/table :bookmarks))
@@ -62,14 +66,17 @@
   (let [input (escape-html text)]
     (map (fn [x] [:p {} x]) (string/split text #"\n\s*?\n"))))
 
+(defn bookmarks-visible-by [user]
+  (-> bookmarks
+      (cq/join users (=* :bookmarks.owner :users.id))
+      (cq/project [:bookmarks.* :users.first_name :users.last_name])
+      ;;(cq/rename {:users.id :uid})
+      (restrict-visibility user)
+      (cq/sort [:date#desc])))
+
 (defpage "/marx" {}
   (let [user (session/get :user)
-        marks (-> bookmarks
-                  (cq/join users (=* :bookmarks.owner :users.id))
-                  (cq/project [:bookmarks.* :users.first_name])
-                  ;;(cq/rename {:users.id :uid})
-                  (restrict-visibility (session/get :user))
-                  (cq/sort [:date#desc]))]
+        marks (bookmarks-visible-by user)]
     (with-dbt
       (layout bookmarx-list-page "Book Marx"
         [:p
@@ -86,6 +93,37 @@
               [:span {:class "bookmark-owner"} " by " (escape-html (:first_name mark))]]
              [:div {:class "bookmark-description"}
               (htmlize-description (:description mark))]])]]))))
+
+(defn marx-feed-for-user [user]
+  (let [marks (bookmarks-visible-by user)]
+    (with-dbt
+      (let [last-updated (sql/with-query-results results
+                           ["SELECT MAX(date) AS maxdate FROM bookmarks"]
+                           (:maxdate (first results)))
+            feed   (doto (.newFeed abdera)
+                     (.setId      (fmt nil "tag:~A,2012:/marx"
+                                       (:tag-base @benki-config)))
+                     (.setTitle   "Book Marx")
+                     (.setUpdated last-updated)
+                     (.addLink    (link :marx)))]
+        (doseq [mark @marks]
+          (doto (.addEntry feed)
+            (.setId            (fmt nil "tag:~A,2012:/marx/~D"
+                                    (:tag-base benki-config)
+                                    (:id mark)))
+            (.setTitle         (:title mark))
+            (.setSummaryAsHtml (hiccup.core/html (htmlize-description (:description mark))))
+            ;;(.setUpdated     (:updated mark))
+            (.setPublished     (:date mark))
+            ;;(.setAuthor      (fmt nil "~A ~A" (:first_name mark) (:last_name mark)))
+            ;;(.addLink        (link :marx (:id mark)))
+            (.addLink          (:uri mark))))
+        (.toString feed)))))
+
+(defpage "/marx/feed" {}
+  (let [user  (session/get :user)]
+    (response/content-type "application/atom+xml"
+      (marx-feed-for-user user))))
 
 (defpage "/marx/tags" {}
   (with-auth

@@ -6,4 +6,5 @@
             :user "benki"
             :password ""}
  :base-uri "http://localhost:3001"
+ :tag-base "example.com"
  :web-port 3001}
