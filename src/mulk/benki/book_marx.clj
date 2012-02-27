@@ -94,19 +94,22 @@
      (catch java.lang.Exception e#
        nil)))
 
-(defpage [:get "/marx/submit"] {uri :uri, description :description, origin :origin}
+(defpage [:get "/marx/submit"] {uri :uri, description :description, origin :origin, title :title}
   (with-auth
-    (let [title (m/domonad m/maybe-m
-                  ;; FIXME: Using slurp here is a potential security problem
-                  ;; because it permits access to internal resources!
-                  [:when  uri
-                   :when  (or (.startsWith uri "http://")
-                              (.startsWith uri "https://"))
-                   soup   (ignore-errors (slurp uri))
-                   page   (org.jsoup.Jsoup/parse soup)
-                   title  (.select page "title")]
-                  (.text title))
-          origin (or origin (get-in (request/ring-request) [:headers "Referer"]))]
+    (let [title (or title
+                    (m/domonad m/maybe-m
+                      ;; FIXME: Using slurp here is a potential security problem
+                      ;; because it permits access to internal resources!
+                      [:when  uri
+                       :when  (or (.startsWith uri "http://")
+                                  (.startsWith uri "https://"))
+                       soup   (ignore-errors (slurp uri))
+                       page   (org.jsoup.Jsoup/parse soup)
+                       title  (.select page "title")]
+                      (.text title)))
+          origin (or origin
+                     (get-in (request/ring-request) [:headers "Referer"])
+                     uri)]
       (layout bookmarx-submission-page "Submit New Bookmark"
         [:form {:method "POST"}
          [:table
