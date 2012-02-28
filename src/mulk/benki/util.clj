@@ -35,6 +35,8 @@
     [:link {:type "text/css"
             :rel  "stylesheet"
             :href (resolve-uri "/style/benki.css")}]
+    [:meta {:content "initial-scale=1.0, width=device-width"
+            :name    "viewport"}]
     (:head kind)]
    [:body [:h1 title]
     content
