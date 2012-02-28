@@ -5,7 +5,8 @@
         noir.core)
   (:require [noir.session  :as session]
             [noir.request  :as request]
-            [noir.response :as response])
+            [noir.response :as response]
+            [clojure.java.jdbc :as sql])
   (:import [java.text DateFormat]))
 
 
@@ -31,6 +32,9 @@
     ;; jQuery
     [:script {:type "text/javascript"
               :src (resolve-uri "/3rdparty/jquery/jquery-1.7.min.js")}]
+    [:link {:type "text/css"
+            :rel  "stylesheet"
+            :href (resolve-uri "/style/benki.css")}]
     (:head kind)]
    [:body [:h1 title]
     content

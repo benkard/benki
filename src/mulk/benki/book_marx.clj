@@ -7,7 +7,7 @@
         [hiccup.core        :only [escape-html]]
         [ring.util.codec    :only [url-encode]]
         noir.core
-        [mulk.benki util db auth config])
+        [mulk.benki util db auth config webutil])
   (:require [clojure.algo.monads  :as m]
             [clojure.java.jdbc    :as sql]
             [clojure.string       :as string]
@@ -79,7 +79,10 @@
         marks (bookmarks-visible-by user)]
     (with-dbt
       (layout bookmarx-list-page "Book Marx"
-        [:p
+        [:div {:id "login-message"
+               :class "login-message"}
+         (login-message)]
+        [:div
          ;;(.toString marks)
          [:ul {:class "bookmarx-list"}
           (for [mark @marks]

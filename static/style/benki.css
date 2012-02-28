@@ -1,0 +1,19 @@
+#login-message {
+    text-align: right;
+    position: absolute;
+    right: 0;
+    top: 0;
+    outline: solid 1px #000;
+    margin: 1em;
+    font-style: oblique;
+}
+
+.logged-in-as {
+    padding: 0.5em 1em 0.5em 1em;
+    background-color: green;
+}
+
+.not-logged-in {
+    padding: 0.5em 1em 0.5em 1em;
+    background-color: yellow;
+}
