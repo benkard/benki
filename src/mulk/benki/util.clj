@@ -50,6 +50,7 @@
   (match [(vec args)]
     [[:login]]           (fresolve "/login")
     [[:marx]]            (fresolve "/marx")
+    [[:marx :submit]]    (fresolve "/marx/submit")
     [[:marx id]]         (fresolve "/marx/~a" id)
     [[:wiki title & xs]] (fresolve "/wiki/~a~@[~a~]" title (first xs))
     ))

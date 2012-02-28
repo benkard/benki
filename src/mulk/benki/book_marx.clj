@@ -156,7 +156,7 @@
                      (get-in (request/ring-request) [:headers "Referer"])
                      uri)]
       (layout bookmarx-submission-page "Submit New Bookmark"
-        [:form {:method "POST"}
+        [:form {:method "POST", :action (link :marx :submit)}
          [:table
           [:tr [:td "URI: "]         [:td [:input {:type "text", :name "uri", :size 100, :value uri}]]]
           [:tr [:td "Title: "]       [:td [:input {:type "text", :name "title", :size 100, :value title}]]]
