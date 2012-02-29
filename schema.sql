@@ -21,6 +21,14 @@ CREATE TABLE openids(
   FOREIGN KEY("user") REFERENCES users
 );
 
+CREATE TABLE page_keys(
+  "user" INTEGER NOT NULL,
+  page   VARCHAR NOT NULL,
+  "key"  DECIMAL NOT NULL,   -- (~ NUMERIC DECIMAL)
+  PRIMARY KEY("user", page, "key"),
+  FOREIGN KEY("user") REFERENCES users
+);
+
 CREATE TABLE wiki_pages(
   id           SERIAL    NOT NULL,
   PRIMARY KEY(id)

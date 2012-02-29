@@ -84,8 +84,7 @@
       (cq/sort [:date#desc])))
 
 (defpage "/marx" {}
-  (let [user (session/get :user)
-        marks (bookmarks-visible-by user)]
+  (let [marks (bookmarks-visible-by *user*)]
     (with-dbt
       (layout bookmarx-list-page "Book Marx"
         [:div {:id "login-message"
@@ -133,9 +132,8 @@
         (.toString feed)))))
 
 (defpage "/marx/feed" {}
-  (let [user  (session/get :user)]
-    (response/content-type "application/atom+xml; charset=UTF-8"
-      (marx-feed-for-user user))))
+  (response/content-type "application/atom+xml; charset=UTF-8"
+    (marx-feed-for-user *user*)))
 
 (defpage "/marx/tags" {}
   (with-auth
@@ -188,8 +186,7 @@
                                  title :title, tags :tags, visibility :visibility,
                                  origin :origin}
   (with-auth
-    (let [tagseq (map string/trim (string/split tags #","))
-          user   (session/get :user)]
+    (let [tagseq (map string/trim (string/split tags #","))]
       (with-dbt
         (let [bookmark (sql/with-query-results
                          results
@@ -197,7 +194,7 @@
                                                   visibility)
                               VALUES (?, ?, ?, ?, ?)
                            RETURNING id"
-                          user uri title description visibility]
+                          *user* uri title description visibility]
                          (:id (first (into () results))))]
           (doseq [tag tagseq]
             (sql/insert-values :bookmark_tags [:bookmark :tag] [bookmark tag]))))))

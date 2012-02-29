@@ -3,11 +3,14 @@
   (:use [clojure         core repl pprint]
         noir.core
         [hiccup core     page-helpers]
-        [mulk.benki      util config])
+        [mulk.benki      util config db])
   (:require [noir server options]
             [mulk.benki wiki auth book_marx]
             [ring.middleware.file]
-            [noir.session      :as session]))
+            [noir.session      :as session]
+            [noir.request      :as request]
+            [clojure.java.jdbc :as sql])
+  (:import [java.math BigDecimal BigInteger]))
 
 
 (defn wrap-utf-8 [handler]
@@ -37,9 +40,24 @@
         ;; (is must-revalidate even valid for server responses?)
         ))))
 
+(defn wrap-auth-token [handler]
+  (fn [request]
+    (binding [*user*
+              (or (when-let [key (get-in request [:params :auth])]
+                    (with-dbt
+                      (sql/with-query-results results
+                          ["SELECT \"user\" AS uid FROM page_keys
+                             WHERE page = ? AND \"key\" = ?"
+                           (:uri request)
+                           (BigDecimal. (BigInteger. key 36))]
+                        (:uid (first results)))))
+                  (session/get :user))]
+      (handler request))))
+
 (do-once ::init
   (noir.server/add-middleware #(wrap-utf-8 %))
   (noir.server/add-middleware #(wrap-base-uri %))
+  (noir.server/add-middleware #(wrap-auth-token %))
   (noir.server/add-middleware #(wrap-cache-control %))
   (noir.server/add-middleware #(ring.middleware.file/wrap-file % "static")))
 

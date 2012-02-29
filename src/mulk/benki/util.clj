@@ -7,10 +7,15 @@
             [noir.request  :as request]
             [noir.response :as response]
             [clojure.java.jdbc :as sql])
-  (:import [java.text DateFormat]))
+  (:import [java.text DateFormat]
+           [java.security SecureRandom]
+           [java.math BigInteger]))
 
 
 (def fmt clojure.pprint/cl-format)
+
+
+(def ^:dynamic *user*)
 
 
 (defonce #^:private finished-initializations (atom #{}))
@@ -42,21 +47,20 @@
     content
     (:bottom kind)]))
 
-
-(defn fresolve [s & args]
-  (resolve-uri (apply fmt nil s args)))
-
-(defn link [& args]
+(defn linkrel [& args]
   (match [(vec args)]
-    [[:login]]           (fresolve "/login")
-    [[:marx]]            (fresolve "/marx")
-    [[:marx :submit]]    (fresolve "/marx/submit")
-    [[:marx id]]         (fresolve "/marx/~a" id)
-    [[:wiki title & xs]] (fresolve "/wiki/~a~@[~a~]" title (first xs))
+    [[:login]]           (fmt nil "/login")
+    [[:marx]]            (fmt nil "/marx")
+    [[:marx :submit]]    (fmt nil "/marx/submit")
+    [[:marx id]]         (fmt nil "/marx/~a" id)
+    [[:wiki title & xs]] (fmt nil "/wiki/~a~@[~a~]" title (first xs))
     ))
 
+(defn link [& args]
+  (resolve-uri (apply linkrel args)))
+
 (defn call-with-auth [thunk]
-  (if (session/get :user)
+  (if *user*
     (thunk)
     (do (session/flash-put! (:uri (request/ring-request)))
         (response/redirect "/login"))))
@@ -70,3 +74,8 @@
 (defn format-date [x]
   (.format (DateFormat/getDateTimeInstance DateFormat/FULL DateFormat/FULL)
            x))
+
+(defonce secure-random (SecureRandom.))
+(defn genkey []
+  ;;(.toString (BigInteger. 260 secure-random) 32)
+  (BigInteger. 260 secure-random))
