@@ -63,8 +63,17 @@
 
 
 (defn htmlize-description [text]
-  (let [input (escape-html text)]
-    (map (fn [x] [:p {} x]) (string/split text #"\n\s*?\n"))))
+  (letfn [(listify [par]
+            (when (re-matches #"^(?msu)\s*\*\s+.*" par)
+              [:ul {}
+               (map (fn [item] [:li {} item])
+                    (filter #(not (= "" (string/trim %)))
+                            (string/split par #"(?su)(\n|^)\s*\*\s+")))]))]
+    (let [input (escape-html text)]
+      (map (fn [par]
+             (or (listify par)
+                 [:p {} par]))
+           (string/split text #"\n\s*?\n")))))
 
 (defn bookmarks-visible-by [user]
   (-> bookmarks
