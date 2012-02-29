@@ -104,15 +104,15 @@
               [:span {:class "bookmark-owner"} " by " (escape-html (:first_name mark))]]
              [:div {:class "bookmark-description"}
               (htmlize-description (:description mark))]])]]
-        [:div {:id "bookmarx-feed-link"}
+        [:div {:id "bookmarx-footer"}
          (let [feed-link (linkrel :marx :feed)]
-           [:span {:id "bookmarx-feed-link-text"}
-            [:a {:href (resolve-uri feed-link)} "Atom"]
+           [:span {:id "bookmarx-footer-text"}
+            "[" [:a {:href (resolve-uri feed-link)} "Atom"] "]"
             (when *user*
               (list
-               " ["
-               [:a {:href (resolve-uri (authlink feed-link))} "authlink"]
-               "]"))])]))))
+               " [" [:a {:href (resolve-uri (authlink feed-link))} "Atom auth"] "]"
+               " [" [:a {:href (authlink (:uri (request/ring-request)))} "authlink"] "]"))])]))))
+
 
 (defn marx-feed-for-user [user]
   (let [marks (bookmarks-visible-by user)]

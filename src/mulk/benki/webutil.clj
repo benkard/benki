@@ -39,7 +39,5 @@
                                  (first results))))]
     (if *user*
       [:div {:class "logged-in-as"}
-       (:first_name user) " " (:last_name user)
-       " "
-       "[" [:a {:href (authlink (:uri (request/ring-request)))} "authlink"] "]"]
+       (:first_name user) " " (:last_name user)]
       [:div {:class "not-logged-in"} [:a {:href (link :login)} "Log in"]])))
