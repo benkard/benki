@@ -13,11 +13,9 @@
 
 
 
-(defn authlink []
+(defn authlink [uri]
   (with-dbt
-    (let [req  (request/ring-request)
-          user *user*
-          uri  (:uri req)
+    (let [user *user*
           dkey (sql/with-query-results results
                    ["SELECT * FROM page_keys WHERE \"user\" = ? AND page = ?"
                     user uri]
@@ -43,5 +41,5 @@
       [:div {:class "logged-in-as"}
        (:first_name user) " " (:last_name user)
        " "
-       [:a {:href (authlink)} "[authlink]"]]
+       "[" [:a {:href (authlink (:uri (request/ring-request)))} "authlink"] "]"]
       [:div {:class "not-logged-in"} [:a {:href (link :login)} "Log in"]])))

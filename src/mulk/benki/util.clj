@@ -52,6 +52,7 @@
     [[:login]]           (fmt nil "/login")
     [[:marx]]            (fmt nil "/marx")
     [[:marx :submit]]    (fmt nil "/marx/submit")
+    [[:marx :feed]]      (fmt nil "/marx/feed")
     [[:marx id]]         (fmt nil "/marx/~a" id)
     [[:wiki title & xs]] (fmt nil "/wiki/~a~@[~a~]" title (first xs))
     ))

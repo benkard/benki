@@ -10,6 +10,21 @@
     margin-bottom: 1em;
 }
 
+#bookmarx-feed-link {
+    text-align: right;
+    position: relative;
+    padding: 0.5em 0.5em 0.5em 0.5em;
+    right: 0;
+    margin: 1em;
+    font-style: oblique;
+}
+
+#bookmarx-feed-link-text {
+    padding: 0.5em 1em 0.5em 1em;
+    border: solid 1px #000;
+    background-color: orange;
+}
+
 /*
 .bookmark-description p {
   margin-bottom: 0;
