@@ -73,7 +73,7 @@
       (map (fn [par]
              (or (listify par)
                  [:p {} par]))
-           (string/split text #"\n\s*?\n")))))
+           (string/split input #"\n\s*?\n")))))
 
 (defn bookmarks-visible-by [user]
   (-> bookmarks
