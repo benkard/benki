@@ -25,7 +25,7 @@ CREATE TABLE page_keys(
   "user" INTEGER NOT NULL,
   page   VARCHAR NOT NULL,
   "key"  DECIMAL NOT NULL,   -- (~ NUMERIC DECIMAL)
-  PRIMARY KEY("user", page, "key"),
+  PRIMARY KEY(page, "key"),
   FOREIGN KEY("user") REFERENCES users
 );
 
