@@ -63,7 +63,10 @@
 (defn call-with-auth [thunk]
   (if *user*
     (thunk)
-    (do (session/flash-put! (:uri (request/ring-request)))
+    (do (session/flash-put! (str (:uri (request/ring-request))
+                                 (if-let [q (:query-string (request/ring-request))]
+                                   (str "?" q)
+                                   "")))
         (response/redirect "/login"))))
 
 (defmacro with-auth [& body]
