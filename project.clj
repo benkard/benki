@@ -36,6 +36,7 @@
                  [org.openid4java/openid4java-consumer "0.9.6" :type "pom"]
                  [org.jsoup/jsoup "1.6.1"]
                  [org.apache.abdera/abdera-parser "1.1.1"]
+                 [clj-apache-http "2.3.2"]
                  ]
   :dev-dependencies [[swank-clojure "1.4.0-SNAPSHOT"]
                      [clj-stacktrace "0.2.3"]]

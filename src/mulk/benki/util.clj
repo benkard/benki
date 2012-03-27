@@ -32,11 +32,15 @@
 ;; defpartial is just defn + html.
 (defpartial layout [kind title & content]
   (html5 {:xml? true}
-   [:head
+   [:head {:data-logged-in (if *user* "true" "false")}
     [:title title]
     ;; jQuery
     [:script {:type "text/javascript"
               :src (resolve-uri "/3rdparty/jquery/jquery-1.7.min.js")}]
+    [:script {:type "text/javascript"
+              :src (resolve-uri "/3rdparty/browserid/include.js")}]
+    [:script {:type "text/javascript"
+              :src (resolve-uri "/js/browserid.js")}]
     [:link {:type "text/css"
             :rel  "stylesheet"
             :href (resolve-uri "/style/benki.css")}]

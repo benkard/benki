@@ -2,7 +2,7 @@
   (:refer-clojure)
   (:use [clojure         core repl pprint]
         [hiccup core     page-helpers]
-        [mulk.benki      util db]
+        [mulk.benki      config util db]
         [clojure.core.match
          :only [match]]
         [noir            core]
@@ -10,7 +10,8 @@
   (:require [noir.session      :as session]
             [noir.response     :as response]
             [noir.request      :as request]
-            [clojure.java.jdbc :as sql])
+            [clojure.java.jdbc :as sql]
+            [com.twinql.clojure.http :as http])
   (:import [org.openid4java.consumer ConsumerManager]
            [org.openid4java.message ParameterList]))
 
@@ -50,6 +51,31 @@
       (layout "Authentication Failed" [:p "OpenID authentication failed."]))))
 
 
+(defpage [:post "/login/browserid/verify"] {assertion :assertion}
+  ;; NB.  Can implement this ourselves if we want.
+  (let [reply  (http/post "https://browserid.org/verify"
+                          :query {:assertion assertion
+                                  :audience (:base-uri @benki-config)}
+                :as :json)
+        result (:content reply)
+        status (:status result)
+        email  (:email  result)]
+    (if (= (:status result) "okay")
+      (with-dbt
+        (let [record  (first (query "SELECT * FROM user_email_addresses WHERE email = ?" email))
+              user-id (and record (:user record))]
+          (if user-id
+            (let [return-uri (session/flash-get)]
+              (session/put! :user user-id)
+              (response/json {:email email, :returnURI return-uri}))
+            {:status 418,
+             :headers {"Content-Type" "text/plain"},
+             :body "I couldn't find you in the database."})))
+      {:status 418,
+       :headers {"Content-Type" "text/plain"},
+       :body "Your BrowserID request was crooked."})))
+
+
 (defpage [:post "/login/return"] []
   (return-from-openid-provider))
 
@@ -76,14 +102,21 @@
 
 (defpage "/login" []
   (session/flash-put! (or (session/flash-get)
-                          (get-in (request/ring-request) [:headers "Referer"])))
+                          (get-in (request/ring-request) [:headers "referer"])))
   (layout login-page-layout "Benki Login"
-    [:form {:action (resolve-uri "/login/authenticate"),
-            :method "GET"
-            :id     "openid_form"}
-     [:div {:id "openid_choice"}
-      [:p "Please select your OpenID provider:"]
-      [:div {:id "openid_btns"}]]
-     [:div {:id "openid_input_area"}
-      [:input {:type "text", :name "openid_identifier", :id "openid_identifier"}]
-      [:input {:type "submit"}]]]))
+    [:div#browserid-box
+     [:h2 "BrowserID login"]
+     [:a#browserid {:href "#"}
+      [:img {:src (resolve-uri "/3rdparty/browserid/sign_in_orange.png")
+             :alt "Sign in using BrowserID"}]]]
+    [:div#openid-login-panel
+     [:h2 "OpenID login"]
+     [:form {:action (resolve-uri "/login/authenticate"),
+             :method "GET"
+             :id     "openid_form"}
+      [:div {:id "openid_choice"}
+       [:p "Please select your OpenID provider:"]
+       [:div {:id "openid_btns"}]]
+      [:div {:id "openid_input_area"}
+       [:input {:type "text", :name "openid_identifier", :id "openid_identifier"}]
+       [:input {:type "submit"}]]]]))

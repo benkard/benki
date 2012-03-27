@@ -21,6 +21,13 @@ CREATE TABLE openids(
   FOREIGN KEY("user") REFERENCES users
 );
 
+CREATE TABLE user_email_addresses(
+  "user"       INTEGER   NOT NULL,
+  email        VARCHAR   NOT NULL,
+  PRIMARY KEY(email),
+  FOREIGN KEY("user") REFERENCES users
+);
+
 CREATE TABLE page_keys(
   "user" INTEGER NOT NULL,
   page   VARCHAR NOT NULL,
