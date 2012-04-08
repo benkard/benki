@@ -55,9 +55,12 @@
         (.sign manager response)
         (redirect (.getDestinationUrl response true))))))
 
+(defn stringify-keys [m]
+  (into {} (map (fn [[k v]] [(name k) v]) m)))
+
 (defn process-openid-request []
   (let [query     (:params (request/ring-request))
-        paramlist (ParameterList. query)
+        paramlist (ParameterList. (stringify-keys query))
         mode      (query "openid.mode")]
     (match [mode]
       ["associate"]
