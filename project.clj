@@ -33,13 +33,12 @@
 
                  ;; Additional libraries
                  ;;[clj-oauth2 "0.0.1"]
-                 [org.openid4java/openid4java-consumer "0.9.6" :type "pom"]
+                 [org.openid4java/openid4java-consumer "0.9.6" :extension "pom"]
                  [org.jsoup/jsoup "1.6.1"]
                  [org.apache.abdera/abdera-parser "1.1.1"]
                  [clj-apache-http "2.3.2"]
                  ]
-  :dev-dependencies [[swank-clojure "1.4.0-SNAPSHOT"]
-                     [clj-stacktrace "0.2.3"]]
+  :plugins [[lein-swank "1.4.3"]]
   :exclusions [org.clojure/clojure-contrib]  ;you know, the old pre-1.3.0 versions
   ;;:hooks [leiningen.hooks.difftest]
   ;;:warn-on-reflection true     ;breaks M-x clojure-jack-in
@@ -63,5 +62,6 @@
                   :snapshots false}}
   :source-path "src"
   ;;:jvm-opts ["-Xms32m"]
-  :main mulk.benki.main)
+  :main mulk.benki.main
+  :min-lein-version "2.0.0")
 
