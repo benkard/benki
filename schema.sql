@@ -28,6 +28,15 @@ CREATE TABLE user_email_addresses(
   FOREIGN KEY("user") REFERENCES users
 );
 
+CREATE TABLE user_nicknames(
+  "user"   INTEGER NOT NULL,
+  nickname VARCHAR NOT NULL,
+  PRIMARY KEY(nickname),
+  FOREIGN KEY("user") REFERENCES users
+);
+
+CREATE INDEX user_nicknames_user ON user_nicknames ("user");
+
 CREATE TABLE page_keys(
   "user" INTEGER NOT NULL,
   page   VARCHAR NOT NULL,

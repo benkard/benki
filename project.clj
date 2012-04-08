@@ -34,6 +34,9 @@
                  ;; Additional libraries
                  ;;[clj-oauth2 "0.0.1"]
                  [org.openid4java/openid4java-consumer "0.9.6" :extension "pom"]
+                 [org.openid4java/openid4java-server   "0.9.6" :extension "pom"]
+                 [org.openid4java/openid4java-xri      "0.9.6" :extension "pom"]
+                 [org.openid4java/openid4java-infocard "0.9.6" :extension "pom"]
                  [org.jsoup/jsoup "1.6.1"]
                  [org.apache.abdera/abdera-parser "1.1.1"]
                  [clj-apache-http "2.3.2"]
