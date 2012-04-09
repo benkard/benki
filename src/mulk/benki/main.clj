@@ -87,10 +87,9 @@
 (defn run-server []
   (let [mode         (or (:mode @benki-config) :production)
         noir-handler (noir.server/gen-handler {:mode mode})]
-    (reset! server
-            (ahttp/start-http-server (ahttp/wrap-ring-handler noir-handler)
-                                     {:port      (:web-port @benki-config)
-                                      :websocket true}))))
+    (ahttp/start-http-server (ahttp/wrap-ring-handler noir-handler)
+                             {:port      (:web-port @benki-config)
+                              :websocket true})))
 
 (defonce server
   (run-server))
