@@ -92,7 +92,7 @@
                               :websocket true})))
 
 (defonce server
-  (run-server))
+  (future (run-server)))
 
 (defn -main [& args]
   (loop []
