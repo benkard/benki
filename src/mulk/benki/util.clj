@@ -99,7 +99,13 @@
 
 
 ;;;; * User input
-(defonce pegdown (PegDownProcessor.))
+(def pegdown (PegDownProcessor.
+              (bit-or org.pegdown.Extensions/SMARTYPANTS
+                      org.pegdown.Extensions/ABBREVIATIONS
+                      org.pegdown.Extensions/TABLES
+                      org.pegdown.Extensions/AUTOLINKS)))
+
+(def markdown (PegDownProcessor.))
 
 (defn markdown->html [markdown]
   (.markdownToHtml pegdown markdown))
