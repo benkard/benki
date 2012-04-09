@@ -68,10 +68,10 @@
             (let [return-uri (session/flash-get)]
               (session/put! :user user-id)
               (response/json {:email email, :returnURI return-uri}))
-            {:status 418,
+            {:status 422,
              :headers {"Content-Type" "text/plain"},
              :body "I couldn't find you in the database."})))
-      {:status 418,
+      {:status 400,
        :headers {"Content-Type" "text/plain"},
        :body "Your BrowserID request was crooked."})))
 

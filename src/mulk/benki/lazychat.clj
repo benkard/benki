@@ -186,7 +186,7 @@
       (receive-all messages
                    (fn [msg]
                      (async-push conn (render-message msg)))))
-    {:status 418}))
+    (async-push conn {:status 426})))
 
 (defpage [:any "/lafargue/post"] {content  :content, visibility :visibility
                                   format   :format,  targets    :targets,
