@@ -5,7 +5,7 @@
         [hiccup core     page-helpers]
         [mulk.benki      util config db])
   (:require [noir server options]
-            [mulk.benki wiki auth book_marx id]
+            [mulk.benki wiki auth book_marx id lazychat]
             [ring.middleware.file]
             [noir.session      :as session]
             [noir.request      :as request]

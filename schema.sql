@@ -85,5 +85,35 @@ CREATE TABLE bookmark_tags(
   FOREIGN KEY(bookmark) REFERENCES bookmarks
 );
 
+
+CREATE TABLE lazychat_messages(
+  id          SERIAL    NOT NULL,
+  author      INTEGER,
+  date        TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  content     VARCHAR,
+  visibility  VARCHAR NOT NULL,
+  format      VARCHAR NOT NULL,
+  PRIMARY KEY(id),
+  FOREIGN KEY(author) REFERENCES users,
+  CHECK (format     IN ('markdown')),
+  CHECK (visibility IN ('personal', 'protected', 'public'))
+);
+
+CREATE TABLE lazychat_targets(
+  message INTEGER NOT NULL,
+  target  INTEGER NOT NULL,
+  PRIMARY KEY(message, target),
+  FOREIGN KEY(message) REFERENCES lazychat_messages,
+  FOREIGN KEY(target)  REFERENCES users
+);
+
+CREATE TABLE lazychat_references(
+  referrer INTEGER NOT NULL,
+  referee  INTEGER NOT NULL,
+  PRIMARY KEY(referrer, referee),
+  FOREIGN KEY(referrer) REFERENCES lazychat_messages,
+  FOREIGN KEY(referee)  REFERENCES lazychat_messages
+);
+
 ROLLBACK;
 --COMMIT;

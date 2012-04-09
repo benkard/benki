@@ -40,6 +40,7 @@
                  [org.jsoup/jsoup "1.6.1"]
                  [org.apache.abdera/abdera-parser "1.1.1"]
                  [clj-apache-http "2.3.2"]
+                 [org.pegdown/pegdown "1.1.0"]
                  ]
   :plugins [[lein-swank "1.4.3"]]
   :exclusions [org.clojure/clojure-contrib]  ;you know, the old pre-1.3.0 versions
@@ -62,6 +63,9 @@
                  ;;},
                  "oracle"
                  {:url "http://download.oracle.com/maven/"
+                  :snapshots false}
+                 "scala-releases"  ;pegdown
+                 {:url "http://scala-tools.org/repo-releases"
                   :snapshots false}}
   :source-path "src"
   ;;:jvm-opts ["-Xms32m"]

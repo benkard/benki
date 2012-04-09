@@ -39,7 +39,7 @@ a:active {
 	border-bottom: 0px solid none;
 }
 
-ul.bookmarx-list {
+ul.bookmarx-list, ul.lafargue-list {
         list-style-type: none;
 }
 
@@ -71,7 +71,7 @@ h2 {
 	border: solid #bbccff;
 }
 
-.bookmark, #content {
+.bookmark, .lafargue-message, #content {
 	/* border-right: 1px solid silver; */
 	color: inherit;
 	background-color: #ffbfbf;

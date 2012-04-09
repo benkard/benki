@@ -1,0 +1,32 @@
+.lafargue-message-date-and-owner {
+    font-style: oblique;
+    color: #555;
+    /* text-indent: 1.5em; */
+    /* margin-left: 1.5em; */
+}
+
+.lafargue-message-body {
+    margin-left: 1.5em;
+    margin-bottom: 1em;
+}
+
+#lafargue-message-footer {
+    text-align: right;
+    position: relative;
+    padding: 0.5em 0.5em 0.5em 0.5em;
+    right: 0;
+    margin: 1em;
+    font-style: oblique;
+}
+
+#lafargue-message-footer-text {
+    padding: 0.5em 1em 0.5em 1em;
+    border: solid 1px #000;
+    background-color: orange;
+}
+
+#lafargue-main-input-box {
+    margin-left:auto;
+    margin-right:auto;
+    text-align:center;
+}

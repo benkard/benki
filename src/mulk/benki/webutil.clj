@@ -13,6 +13,7 @@
 
 
 
+;;;; * Login/authentication
 (defn authlink [uri]
   (with-dbt
     (let [user *user*
@@ -47,3 +48,8 @@
                :alt "Sign in"}]]
        [:div "or:"]
        [:a {:href (link :login)} "Sign in normally"]])))
+
+
+;;;; * Environment/request stuff
+(defn referrer []
+  (get-in (request/ring-request) [:headers "referer"]))

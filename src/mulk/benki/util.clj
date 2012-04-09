@@ -9,7 +9,10 @@
             [clojure.java.jdbc :as sql])
   (:import [java.text DateFormat]
            [java.security SecureRandom]
-           [java.math BigInteger]))
+           [java.math BigInteger]
+           [org.jsoup Jsoup]
+           [org.jsoup.safety Cleaner Whitelist]
+           [org.pegdown PegDownProcessor]))
 
 
 (def fmt clojure.pprint/cl-format)
@@ -54,10 +57,12 @@
 (defn linkrel [& args]
   (match [(vec args)]
     [[:login]]           (fmt nil "/login")
+    [[:home]]            (fmt nil "/")
     [[:marx]]            (fmt nil "/marx")
     [[:marx :submit]]    (fmt nil "/marx/submit")
     [[:marx :feed]]      (fmt nil "/marx/feed")
     [[:marx id]]         (fmt nil "/marx/~a" id)
+    [[:lafargue :post]]  (fmt nil "/lafargue/post")
     [[:wiki title & xs]] (fmt nil "/wiki/~a~@[~a~]" title (first xs))
     ))
 
@@ -87,3 +92,13 @@
 (defn genkey []
   ;;(.toString (BigInteger. 260 secure-random) 32)
   (BigInteger. 260 secure-random))
+
+
+;;;; * User input
+(defonce pegdown (PegDownProcessor.))
+
+(defn markdown->html [markdown]
+  (.markdownToHtml pegdown markdown))
+
+(defn sanitize-html [html]
+  (Jsoup/clean html (Whitelist/basic)))
