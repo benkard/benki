@@ -3,22 +3,30 @@
   (:use [clojure     repl]
         [hiccup      core page-helpers]
         [noir        core]
+        [noir-async  core]
         [mulk.benki  auth config db util webutil]
         ;;
         [clojure.core.match :only [match]]
         [hiccup.core        :only [escape-html]]
-        [ring.util.codec    :only [url-encode]])
+        [ring.util.codec    :only [url-encode]]
+        [lamina.core        :only [channel enqueue enqueue-and-close receive-all
+                                   map* filter*]])
   (:require [clojure.algo.monads  :as m]
             [clojure.java.jdbc    :as sql]
             [clojure.string       :as string]
             [noir.request         :as request]
             [noir.response        :as response]
             [noir.session         :as session]
-            hiccup.core)
+            hiccup.core
+            [lamina.core          :as lamina]
+            [aleph.http           :as ahttp]
+            [aleph.formats        :as aformats])
   (:import [org.apache.abdera Abdera]))
 
 
 (defonce abdera (Abdera.))
+(defonce lafargue-events (channel))
+
 
 (defn create-lazychat-message! [{content  :content,  visibility :visibility
                                  format   :format,   targets    :targets,
@@ -42,7 +50,11 @@
         (doseq [target targets]
           (sql/insert-values :lazychat_targets
                              [:message :target]
-                             [id (int target)]))))))
+                             [id (int target)]))
+        (enqueue lafargue-events
+                 {content  :content,  visibility :visibility
+                  format   :format,   targets    :targets,
+                  referees :referees, id         :id})))))
 
 (defn select-message [id]
   (let [message  (query1 "SELECT author, content, format, visibility, date
@@ -74,7 +86,9 @@
                   :type "text/css"}]
           [:link {:rel "stylesheet"
                   :href (resolve-uri "/style/lafargue.css")
-                  :type "text/css"}])})
+                  :type "text/css"}]
+          [:script {:src (resolve-uri "/js/lafargue.js")
+                    :type "text/javascript"}])})
 
 (defmacro with-messages-visible-by-user [[messages user] & body]
   `(sql/with-query-results ~messages
@@ -91,6 +105,19 @@
           ORDER BY m.date DESC"
         ~user ~user]
     ~@body))
+
+
+(defn render-message [message]
+  (html
+   [:li {:class "lafargue-message"}
+    [:h2 {:class "lafargue-message-title"}]
+    [:p {:class "lafargue-message-date-and-owner"}
+     [:span {:class "lafargue-message-date"}
+      (escape-html (format-date (:date message)))]
+     [:span {:class "lafargue-message-owner"}
+      " by " (escape-html (:first_name message))]]
+    [:div {:class "lafargue-message-body"}
+     (sanitize-html (markdown->html (:content message)))]]))
 
 
 (defpage "/lafargue" {}
@@ -112,15 +139,7 @@
         (with-messages-visible-by-user [messages *user*]
           (doall
            (for [message messages]
-             [:li {:class "lafargue-message"}
-              [:h2 {:class "lafargue-message-title"}]
-              [:p {:class "lafargue-message-date-and-owner"}
-               [:span {:class "lafargue-message-date"}
-                (escape-html (format-date (:date message)))]
-               [:span {:class "lafargue-message-owner"}
-                " by " (escape-html (:first_name message))]]
-              [:div {:class "lafargue-message-body"}
-               (sanitize-html (markdown->html (:content message)))]])))
+             (render-message message))))
         [:div {:id "lafargue-footer"}
          (let [feed-link (linkrel :lafargue :feed)]
            [:span {:id "lafargue-footer-text"}
@@ -159,6 +178,24 @@
 (defpage "/lafargue/feed" {}
   (response/content-type "application/atom+xml; charset=UTF-8"
     (lazychat-feed-for-user *user*)))
+
+(defpage-async "/lafargue/events" {} conn
+  (if (websocket? conn)
+    (let [messages (filter* #(may-read? *user* %) lafargue-events)]
+      (receive-all messages
+                   (fn [msg]
+                     (async-push conn (render-message msg)))))
+    {:status 418}))
+
+(defpage [:any "/lafargue/post"] {content  :content, visibility :visibility
+                                  format   :format,  targets    :targets,
+                                  referees :referees}
+  (with-auth
+    (create-lazychat-message! {:content  content, :visibility visibility,
+                               :format   format,  :targets    targets,
+                               :referees referees})
+    (redirect (referrer))))
+
 
 (defpage [:any "/lafargue/post"] {content  :content, visibility :visibility
                                   format   :format,  targets    :targets,

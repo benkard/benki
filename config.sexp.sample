@@ -1,10 +1,11 @@
 ;;;; -*- mode: clojure; coding: utf-8 -*-
 
-{:database {:classname "org.postgresql.Driver"
-            :subprotocol "postgresql"
-            :subname "//localhost:5432/benki"
-            :user "benki"
-            :password ""}
- :base-uri "http://localhost:3001"
- :tag-base "example.com"
- :web-port 3001}
+{:database       {:classname "org.postgresql.Driver"
+                  :subprotocol "postgresql"
+                  :subname "//localhost:5432/benki"
+                  :user "benki"
+                  :password ""}
+ :websocket-base "ws://localhost:3001"
+ :base-uri       "http://localhost:3001"
+ :tag-base       "example.com"
+ :web-port       3001}

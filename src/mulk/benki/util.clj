@@ -2,7 +2,8 @@
   (:refer-clojure)
   (:use [hiccup core page-helpers]
         [clojure.core.match :only [match]]
-        noir.core)
+        noir.core
+        [mulk.benki config])
   (:require [noir.session  :as session]
             [noir.request  :as request]
             [noir.response :as response]
@@ -35,7 +36,8 @@
 ;; defpartial is just defn + html.
 (defpartial layout [kind title & content]
   (html5 {:xml? true}
-   [:head {:data-logged-in (if *user* "true" "false")}
+   [:head {:data-logged-in      (if *user* "true" "false"),
+           :data-websocket-base (:websocket-base @benki-config)}
     [:title title]
     ;; jQuery
     [:script {:type "text/javascript"
