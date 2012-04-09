@@ -62,6 +62,8 @@
     [[:marx :submit]]    (fmt nil "/marx/submit")
     [[:marx :feed]]      (fmt nil "/marx/feed")
     [[:marx id]]         (fmt nil "/marx/~a" id)
+    [[:lafargue]]        (fmt nil "/lafargue")
+    [[:lafargue :feed]]  (fmt nil "/lafargue/feed")
     [[:lafargue :post]]  (fmt nil "/lafargue/post")
     [[:wiki title & xs]] (fmt nil "/wiki/~a~@[~a~]" title (first xs))
     ))

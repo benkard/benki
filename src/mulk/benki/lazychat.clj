@@ -18,6 +18,8 @@
   (:import [org.apache.abdera Abdera]))
 
 
+(defonce abdera (Abdera.))
+
 (defn create-lazychat-message! [{content  :content,  visibility :visibility
                                  format   :format,   targets    :targets,
                                  referees :referees, id         :id}]
@@ -74,6 +76,23 @@
                   :href (resolve-uri "/style/lafargue.css")
                   :type "text/css"}])})
 
+(defmacro with-messages-visible-by-user [[messages user] & body]
+  `(sql/with-query-results ~messages
+       ["SELECT m.id, m.author, m.date, m.content, m.format, u.first_name, u.last_name
+           FROM lazychat_messages m
+           JOIN users u ON (author = u.id)
+          WHERE (visibility = 'public'
+                 OR (visibility = 'protected' AND (?::INTEGER) IS NOT NULL)
+                 OR (visibility = 'personal'
+                     AND EXISTS (SELECT *
+                                   FROM lazychat_targets t
+                                  WHERE t.target = (?::INTEGER)
+                                        AND message = m.id)))
+          ORDER BY m.date DESC"
+        ~user ~user]
+    ~@body))
+
+
 (defpage "/lafargue" {}
   (with-dbt
     (layout lafargue-list-page "Lafargue Lazy Chat"
@@ -90,19 +109,7 @@
           [:input {:type "radio", :name "visibility", :value "public"} "Public"]]
          [:div [:input {:type "submit"}]]]]
        [:ul {:class "lafargue-list"}
-        (sql/with-query-results messages
-            ["SELECT m.id, m.author, m.date, m.content, m.format, u.first_name, u.last_name
-                FROM lazychat_messages m
-                JOIN users u ON (author = u.id)
-               WHERE (visibility = 'public'
-                      OR (visibility = 'protected' AND (?::INTEGER) IS NOT NULL)
-                      OR (visibility = 'personal'
-                          AND EXISTS (SELECT *
-                                        FROM lazychat_targets t
-                                       WHERE t.target = (?::INTEGER)
-                                             AND message = m.id)))
-               ORDER BY m.date DESC"
-             *user* *user*]
+        (with-messages-visible-by-user [messages *user*]
           (doall
            (for [message messages]
              [:li {:class "lafargue-message"}
@@ -113,8 +120,45 @@
                [:span {:class "lafargue-message-owner"}
                 " by " (escape-html (:first_name message))]]
               [:div {:class "lafargue-message-body"}
-               (sanitize-html (markdown->html (:content message)))]])))]])))
+               (sanitize-html (markdown->html (:content message)))]])))
+        [:div {:id "lafargue-footer"}
+         (let [feed-link (linkrel :lafargue :feed)]
+           [:span {:id "lafargue-footer-text"}
+            "[" [:a {:href (resolve-uri feed-link)} "Atom"] "]"
+            (when *user*
+              (list
+               " [" [:a {:href (resolve-uri (authlink feed-link))} "Atom auth"] "]"
+               " [" [:a {:href (authlink (:uri (request/ring-request)))} "authlink"] "]"))])]]])))
 
+
+(defn lazychat-feed-for-user [user]
+  (with-dbt
+    (with-messages-visible-by-user [messages user]
+      (let [last-updated (sql/with-query-results results
+                           ["SELECT MAX(date) AS maxdate FROM lazychat_messages"]
+                           (:maxdate (first results)))
+            feed   (doto (.newFeed abdera)
+                     (.setId      (fmt nil "tag:~A,2012:/lafargue"
+                                       (:tag-base @benki-config)))
+                     (.setTitle   "Lafargue Lazy Chat")
+                     (.setUpdated last-updated)
+                     (.addLink    (link :lafargue)))]
+        (doseq [item messages]
+          (doto (.addEntry feed)
+            (.setId            (fmt nil "tag:~A,2012:/lafargue/~D"
+                                    (:tag-base benki-config)
+                                    (:id item)))
+            (.setSummaryAsHtml (sanitize-html (markdown->html (:content item))))
+            (.setPublished     (:date item))
+            ;;(.setAuthor        (fmt nil "~A ~A" (:first_name item) (:last_name item)))
+            ;;(.addLink        (link :lafargue (:id item)))
+            ))
+        (.toString feed)))))
+
+
+(defpage "/lafargue/feed" {}
+  (response/content-type "application/atom+xml; charset=UTF-8"
+    (lazychat-feed-for-user *user*)))
 
 (defpage [:any "/lafargue/post"] {content  :content, visibility :visibility
                                   format   :format,  targets    :targets,

@@ -10,7 +10,7 @@
     margin-bottom: 1em;
 }
 
-#lafargue-message-footer {
+#lafargue-footer {
     text-align: right;
     position: relative;
     padding: 0.5em 0.5em 0.5em 0.5em;
@@ -19,7 +19,7 @@
     font-style: oblique;
 }
 
-#lafargue-message-footer-text {
+#lafargue-footer-text {
     padding: 0.5em 1em 0.5em 1em;
     border: solid 1px #000;
     background-color: orange;
