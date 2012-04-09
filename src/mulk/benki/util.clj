@@ -103,7 +103,9 @@
               (bit-or org.pegdown.Extensions/SMARTYPANTS
                       org.pegdown.Extensions/ABBREVIATIONS
                       org.pegdown.Extensions/TABLES
-                      org.pegdown.Extensions/AUTOLINKS)))
+                      org.pegdown.Extensions/AUTOLINKS
+                      org.pegdown.Extensions/DEFINITIONS
+                      org.pegdown.Extensions/FENCED_CODE_BLOCKS)))
 
 (def markdown (PegDownProcessor.))
 
