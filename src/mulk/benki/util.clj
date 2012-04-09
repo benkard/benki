@@ -102,6 +102,7 @@
 (def pegdown (PegDownProcessor.
               (bit-or org.pegdown.Extensions/SMARTYPANTS
                       org.pegdown.Extensions/ABBREVIATIONS
+                      org.pegdown.Extensions/HARDWRAPS
                       org.pegdown.Extensions/TABLES
                       org.pegdown.Extensions/AUTOLINKS
                       org.pegdown.Extensions/DEFINITIONS
