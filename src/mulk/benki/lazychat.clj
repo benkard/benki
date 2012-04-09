@@ -52,9 +52,10 @@
                              [:message :target]
                              [id (int target)]))
         (enqueue lafargue-events
-                 {content  :content,  visibility :visibility
-                  format   :format,   targets    :targets,
-                  referees :referees, id         :id})))))
+                 {:content  content,  :visibility visibility,
+                  :format   format,   :targets    targets,
+                  :referees referees, :id         id,
+                  :author  *user*})))))
 
 (defn select-message [id]
   (let [message  (query1 "SELECT author, content, format, visibility, date
