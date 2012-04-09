@@ -55,7 +55,7 @@
                  {:content  content,  :visibility visibility,
                   :format   format,   :targets    targets,
                   :referees referees, :id         id,
-                  :author  *user*})))))
+                  :author   *user*,   :date       (java.util.Date.)})))))
 
 (defn select-message [id]
   (let [message  (query1 "SELECT author, content, format, visibility, date
