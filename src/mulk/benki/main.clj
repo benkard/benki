@@ -84,8 +84,6 @@
   (noir.server/add-middleware #(ring.middleware.file/wrap-file % "static"))
   (noir.server/add-middleware #(wrap-extension-mimetype %)))
 
-(defonce server (atom nil))
-
 (defn run-server []
   (let [mode         (or (:mode @benki-config) :production)
         noir-handler (noir.server/gen-handler {:mode mode})]
@@ -94,10 +92,8 @@
                                      {:port      (:web-port @benki-config)
                                       :websocket true}))))
 
-(do-once ::start
-  (doto (Thread. run-server)
-    (.setDaemon true)
-    (.start)))
+(defonce server
+  (run-server))
 
 (defn -main [& args]
   (loop []
