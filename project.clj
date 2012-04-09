@@ -24,6 +24,8 @@
                  [noir "1.2.1"]
                  [hiccup "0.3.7"]
                  [cssgen "0.2.5"]
+                 [aleph "0.2.1-beta2"]
+                 [noir-async "1.0.0-SNAPSHOT"]
 
                  ;; Relational database access
                  [clojureql "1.0.3"]

@@ -9,7 +9,11 @@
             [ring.middleware.file]
             [noir.session      :as session]
             [noir.request      :as request]
-            [clojure.java.jdbc :as sql])
+            [clojure.java.jdbc :as sql]
+            [lamina.core       :as lamina]
+            [aleph.http        :as ahttp]
+            [aleph.formats     :as aformats]
+            [ring.util.codec   :as codec])
   (:import [java.math BigDecimal BigInteger]))
 
 
@@ -54,17 +58,46 @@
                   (session/get :user))]
       (handler request))))
 
+(defn wrap-extension-mimetype [handler]
+  (fn [request]
+    (let [uri       (codec/url-decode (:uri request))
+          response  (handler request)
+          extension (second (re-find #"\.([\w]*)($|\?)" uri))
+          exttype   ({"txt"  "text/plain"
+                      "css"  "text/css"
+                      "js"   "text/javascript"
+                      "html" "text/html"
+                      "jpg"  "image/jpeg"
+                      "gif"  "image/gif"
+                      "png"  "image/png"}
+                     extension)]
+      (if (and (nil? (get-in response [:headers "Content-Type"]))
+               exttype)
+        (assoc-in response [:headers "Content-Type"] exttype)
+        response))))
+
 (do-once ::init
   (noir.server/add-middleware #(wrap-utf-8 %))
   (noir.server/add-middleware #(wrap-base-uri %))
   (noir.server/add-middleware #(wrap-auth-token %))
   (noir.server/add-middleware #(wrap-cache-control %))
-  (noir.server/add-middleware #(ring.middleware.file/wrap-file % "static")))
+  (noir.server/add-middleware #(ring.middleware.file/wrap-file % "static"))
+  (noir.server/add-middleware #(wrap-extension-mimetype %)))
 
-(defonce server (doto (Thread. #(noir.server/start (:web-port @benki-config)))
-                  (.setDaemon true)
-                  (.start)))
+(defonce server (atom nil))
 
+(defn run-server []
+  (let [mode         (or (:mode @benki-config) :production)
+        noir-handler (noir.server/gen-handler {:mode mode})]
+    (reset! server
+            (ahttp/start-http-server (ahttp/wrap-ring-handler noir-handler)
+                                     {:port      (:web-port @benki-config)
+                                      :websocket true}))))
+
+(do-once ::start
+  (doto (Thread. run-server)
+    (.setDaemon true)
+    (.start)))
 
 (defn -main [& args]
   (loop []
