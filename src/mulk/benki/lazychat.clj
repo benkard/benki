@@ -21,13 +21,37 @@
             [lamina.core          :as lamina]
             [aleph.http           :as ahttp]
             [aleph.formats        :as aformats]
-            [clojure.data.json    :as json])
+            [clojure.data.json    :as json]
+            [mulk.benki.xmpp      :as xmpp])
   (:import [org.apache.abdera Abdera]))
 
 
 (defonce abdera (Abdera.))
 (defonce lafargue-events (channel))
 
+
+(defmethod xmpp/format-message ::lafargue-message
+  [message]
+  (fmt nil "<~A>\n\n~A" (:first_name message) (:content message)))
+
+(defn determine-targets [message]
+  (letfn [(protected-targets []
+            (with-dbt
+              (map :id (query "SELECT id FROM users WHERE status IN ('admin', 'approved')"))))]
+    (into #{}
+          (concat (:targets message)
+                  (case (keyword (:visibility message))
+                    :personal  nil
+                    :protected (protected-targets)
+                    :public    (cons nil (protected-targets)))))))
+
+(defn push-message-to-xmpp [msg]
+  (let [targets (filter integer? (determine-targets msg))]
+    (enqueue xmpp/messages {:message msg,
+                            :targets targets})))
+
+(defn start-xmpp-pump []
+  (receive-all lafargue-events push-message-to-xmpp))
 
 (defn create-lazychat-message! [{content  :content,  visibility :visibility
                                  format   :format,   targets    :targets,
@@ -53,10 +77,12 @@
                              [:message :target]
                              [id (int target)]))
         (enqueue lafargue-events
-                 {:content  content,  :visibility visibility,
-                  :format   format,   :targets    targets,
-                  :referees referees, :id         id,
-                  :author   *user*,   :date       (java.util.Date.)})))))
+                 (with-meta
+                   {:content  content,  :visibility visibility,
+                    :format   format,   :targets    targets,
+                    :referees referees, :id         id,
+                    :author   *user*,   :date       (java.util.Date.)}
+                   {:type ::lafargue-message}))))))
 
 (defn select-message [id]
   (let [message  (query1 "SELECT author, content, format, visibility, date
@@ -231,3 +257,7 @@
   (with-auth
     (response/json
       (with-dbt (query1 "SELECT NEXTVAL('lazychat_messages_id_seq')")))))
+
+(defn init-lazychat! []
+  (future
+    (receive-all lafargue-events push-message-to-xmpp)))

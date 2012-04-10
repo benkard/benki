@@ -8,4 +8,13 @@
  :websocket-base "ws://localhost:3001"
  :base-uri       "http://localhost:3001"
  :tag-base       "example.com"
- :web-port       3001}
+ :web-port       3001
+ :mode           :production   ;or :dev
+ :xmpp           {:user         "benki"
+                  :service-name "example.com"
+                  :server       "jabber.example.com"
+                  :port         5222
+                  :password     ""
+                  :tls          :required}  ;or one of: true, false
+ }
+

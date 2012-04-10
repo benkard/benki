@@ -34,8 +34,15 @@ CREATE TABLE user_nicknames(
   PRIMARY KEY(nickname),
   FOREIGN KEY("user") REFERENCES users
 );
-
 CREATE INDEX user_nicknames_user ON user_nicknames ("user");
+
+CREATE TABLE user_jids(
+  "user" INTEGER NOT NULL,
+  jid    VARCHAR NOT NULL,
+  PRIMARY KEY("user", jid),
+  FOREIGN KEY("user") REFERENCES users
+);
+CREATE INDEX user_jids_user ON user_jids ("user");
 
 CREATE TABLE page_keys(
   "user" INTEGER NOT NULL,

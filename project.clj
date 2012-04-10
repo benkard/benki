@@ -44,6 +44,8 @@
                  [org.apache.ws.commons.axiom/axiom-api "1.2.12"]
                  [clj-apache-http "2.3.2"]
                  [org.pegdown/pegdown "1.1.0"]
+                 [jivesoftware/smack "3.1.0"]
+                 [jivesoftware/smackx "3.1.0"]
                  ]
   :plugins [[lein-swank "1.4.3"]]
   :exclusions [org.clojure/clojure-contrib]  ;you know, the old pre-1.3.0 versions

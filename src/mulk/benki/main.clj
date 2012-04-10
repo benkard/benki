@@ -5,7 +5,7 @@
         [hiccup core     page-helpers]
         [mulk.benki      util config db])
   (:require [noir server options]
-            [mulk.benki wiki auth book_marx id lazychat]
+            [mulk.benki wiki auth book_marx id lazychat xmpp]
             [ring.middleware.file]
             [noir.session      :as session]
             [noir.request      :as request]
@@ -92,7 +92,10 @@
                               :websocket true})))
 
 (defonce server
-  (future (run-server)))
+  (do
+    (future (mulk.benki.xmpp/init-xmpp!))
+    (future (mulk.benki.lazychat/init-lazychat!))
+    (future (run-server))))
 
 (defn -main [& args]
   (loop []
