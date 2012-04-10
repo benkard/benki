@@ -32,10 +32,10 @@
                                                 true      ConnectionConfiguration$SecurityMode/enabled
                                                 false     ConnectionConfiguration$SecurityMode/disabled
                                                 :required ConnectionConfiguration$SecurityMode/required))
-                            (.setVerifyRootCAEnabled true)
-                            (.setVerifyChainEnabled  true)
+                            (.setVerifyRootCAEnabled (:verify-cert xmpp-config))
+                            (.setVerifyChainEnabled  (:verify-cert xmpp-config))
                             ;;(.setCompressionEnabled  true)
-                            (.setSASLAuthenticationEnabled true))]
+                            (.setSASLAuthenticationEnabled (:sasl xmpp-config)))]
     (doto (XMPPConnection. connection-config)
       (.connect)
       (.login (:user xmpp-config) (:password xmpp-config) (:resource xmpp-config)))))

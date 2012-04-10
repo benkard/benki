@@ -15,6 +15,8 @@
                   :server       "jabber.example.com"
                   :port         5222
                   :password     ""
+                  :sasl         true
+                  :verify-cert  true
                   :tls          :required}  ;or one of: true, false
  }
 
