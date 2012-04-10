@@ -9,7 +9,7 @@ jQuery(function($) {
                 var message = JSON.parse(event.data);
                 $('.lafargue-list').prepend(message.html);
                 if (window.webkitNotifications && notificationsp) {
-                    var notification = window.webkitNotifications.createNotification(null, '', 'Lafargue', 'New message by ' + message.first_name);
+                    var notification = window.webkitNotifications.createNotification('', 'Lafargue', 'New message by ' + message.first_name);
                     notification.show();
                 }
             };
