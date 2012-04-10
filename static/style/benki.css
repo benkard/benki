@@ -1,4 +1,4 @@
-#login-message {
+#notifications {
     text-align: right;
     position: absolute;
     right: 0;
@@ -16,4 +16,16 @@
 .not-logged-in {
     padding: 0.5em 1em 0.5em 1em;
     background-color: yellow;
+}
+
+.bad {
+    background-color: yellow;
+}
+
+.good {
+    background-color: green;
+}
+
+.notification {
+    padding: 0.5em 1em 0.5em 1em;
 }

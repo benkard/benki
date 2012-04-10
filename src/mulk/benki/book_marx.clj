@@ -87,8 +87,8 @@
   (let [marks (bookmarks-visible-by *user*)]
     (with-dbt
       (layout bookmarx-list-page "Book Marx"
-        [:div {:id "login-message"
-               :class "login-message"}
+        [:div {:id "notifications"
+               :class "notifications"}
          (login-message)]
         [:div
          ;;(.toString marks)

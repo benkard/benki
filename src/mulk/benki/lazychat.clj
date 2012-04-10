@@ -20,7 +20,8 @@
             hiccup.core
             [lamina.core          :as lamina]
             [aleph.http           :as ahttp]
-            [aleph.formats        :as aformats])
+            [aleph.formats        :as aformats]
+            [clojure.data.json    :as json])
   (:import [org.apache.abdera Abdera]))
 
 
@@ -120,12 +121,17 @@
     [:div {:class "lafargue-message-body"}
      (sanitize-html (markdown->html (:content message)))]]))
 
+(defn render-message-as-json [message]
+  (json/json-str (assoc message
+                   :html (render-message message)
+                   :date nil)))
+
 
 (defpage "/lafargue" {}
   (with-dbt
     (layout lafargue-list-page "Lafargue Lazy Chat"
-      [:div {:id "login-message"
-             :class "login-message"}
+      [:div {:id "notifications"
+             :class "notifications"}
        (login-message)]
       [:div
        [:div {:id "lafargue-main-input-box" :class "lafargue-input-box"}
@@ -185,7 +191,7 @@
     (let [messages (filter* #(may-read? *user* %) lafargue-events)]
       (receive-all messages
                    (fn [msg]
-                     (async-push conn (render-message msg)))))
+                     (async-push conn (render-message-as-json msg)))))
     (async-push conn {:status 426})))
 
 (defpage [:any "/lafargue/post"] {content  :content, visibility :visibility
