@@ -11,6 +11,9 @@ jQuery(function($) {
                 if (window.webkitNotifications && notificationsp) {
                     var notification = window.webkitNotifications.createNotification('', 'Lafargue', 'New message by ' + message.first_name);
                     notification.show();
+                    notification.onclick = function() {
+                        notification.cancel();
+                    };
                 }
             };
             var reconnect = function() {
