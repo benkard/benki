@@ -7,7 +7,7 @@
         [hiccup.core        :only [escape-html]]
         [ring.util.codec    :only [url-encode]]
         noir.core
-        [mulk.benki util db auth config webutil])
+        [mulk.benki util db auth config webutil feed])
   (:require [clojure.algo.monads  :as m]
             [clojure.java.jdbc    :as sql]
             [clojure.string       :as string]
@@ -16,11 +16,8 @@
             [noir.response        :as response]
             [noir.session         :as session]
             hiccup.core)
-  (:import [org.jsoup         Jsoup]
-           [org.apache.abdera Abdera]))
+  (:import [org.jsoup         Jsoup]))
 
-
-(defonce abdera (Abdera.))
 
 (def bookmark_tags (cq/table :bookmark_tags))
 (def bookmarks     (cq/table :bookmarks))
@@ -113,32 +110,18 @@
                " [" [:a {:href (resolve-uri (authlink feed-link))} "Atom auth"] "]"
                " [" [:a {:href (authlink (:uri (request/ring-request)))} "authlink"] "]"))])]))))
 
-
 (defn marx-feed-for-user [user]
   (let [marks (bookmarks-visible-by user)]
     (with-dbt
       (let [last-updated (sql/with-query-results results
                            ["SELECT MAX(date) AS maxdate FROM bookmarks"]
                            (:maxdate (first results)))
-            feed   (doto (.newFeed abdera)
-                     (.setId      (fmt nil "tag:~A,2012:/marx"
-                                       (:tag-base @benki-config)))
-                     (.setTitle   "Book Marx")
-                     (.setUpdated last-updated)
-                     (.addLink    (link :marx)))]
-        (doseq [mark @marks]
-          (doto (.addEntry feed)
-            (.setId            (fmt nil "tag:~A,2012:/marx/~D"
-                                    (:tag-base benki-config)
-                                    (:id mark)))
-            (.setTitle         (:title mark))
-            (.setSummaryAsHtml (hiccup.core/html (htmlize-description (:description mark))))
-            ;;(.setUpdated     (:updated mark))
-            (.setPublished     (:date mark))
-            ;;(.setAuthor      (fmt nil "~A ~A" (:first_name mark) (:last_name mark)))
-            ;;(.addLink        (link :marx (:id mark)))
-            (.addLink          (:uri mark))))
-        (.toString feed)))))
+            items  (map #(with-meta
+                           (assoc %
+                             (hiccup.core/html (htmlize-description (:description %))))
+                           {:type ::bookmark}) @marks)]
+        (generate-feed "Book Marx" last-updated "marx" (link :marx)
+                       items)))))
 
 (defpage "/marx/feed" {}
   (response/content-type "application/atom+xml; charset=UTF-8"

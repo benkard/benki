@@ -4,7 +4,7 @@
         [hiccup      core page-helpers]
         [noir        core]
         [noir-async  core]
-        [mulk.benki  auth config db util webutil]
+        [mulk.benki  auth config db util webutil feed]
         ;;
         [clojure.core.match :only [match]]
         [hiccup.core        :only [escape-html]]
@@ -22,11 +22,9 @@
             [aleph.http           :as ahttp]
             [aleph.formats        :as aformats]
             [clojure.data.json    :as json]
-            [mulk.benki.xmpp      :as xmpp])
-  (:import [org.apache.abdera Abdera]))
+            [mulk.benki.xmpp      :as xmpp]))
 
 
-(defonce abdera (Abdera.))
 (defonce lafargue-events (channel))
 
 
@@ -53,6 +51,9 @@
 (defn start-xmpp-pump []
   (receive-all lafargue-events push-message-to-xmpp))
 
+(defn fill-in-author-details []
+  )
+
 (defn create-lazychat-message! [{content  :content,  visibility :visibility
                                  format   :format,   targets    :targets,
                                  referees :referees, id         :id}]
@@ -78,10 +79,11 @@
                              [id (int target)]))
         (enqueue lafargue-events
                  (with-meta
-                   {:content  content,  :visibility visibility,
-                    :format   format,   :targets    targets,
-                    :referees referees, :id         id,
-                    :author   *user*,   :date       (java.util.Date.)}
+                   (fill-in-author-details
+                    {:content  content,  :visibility visibility,
+                     :format   format,   :targets    targets,
+                     :referees referees, :id         id,
+                     :author   *user*,   :date       (java.util.Date.)})
                    {:type ::lafargue-message}))))))
 
 (defn select-message [id]
@@ -189,23 +191,9 @@
       (let [last-updated (sql/with-query-results results
                            ["SELECT MAX(date) AS maxdate FROM lazychat_messages"]
                            (:maxdate (first results)))
-            feed   (doto (.newFeed abdera)
-                     (.setId      (fmt nil "tag:~A,2012:/lafargue"
-                                       (:tag-base @benki-config)))
-                     (.setTitle   "Lafargue Lazy Chat")
-                     (.setUpdated last-updated)
-                     (.addLink    (link :lafargue)))]
-        (doseq [item messages]
-          (doto (.addEntry feed)
-            (.setId            (fmt nil "tag:~A,2012:/lafargue/~D"
-                                    (:tag-base benki-config)
-                                    (:id item)))
-            (.setSummaryAsHtml (sanitize-html (markdown->html (:content item))))
-            (.setPublished     (:date item))
-            ;;(.setAuthor        (fmt nil "~A ~A" (:first_name item) (:last_name item)))
-            ;;(.addLink        (link :lafargue (:id item)))
-            ))
-        (.toString feed)))))
+            items  (map #(with-meta % {:type ::lazychat-message}) messages)]
+        (generate-feed "Lafargue Lazy Chat" last-updated "lafargue" (link :lafargue)
+                       items)))))
 
 
 (defpage "/lafargue/feed" {}
