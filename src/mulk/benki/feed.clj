@@ -11,7 +11,7 @@
 (defonce abdera (Abdera.))
 
 
-(defmulti feed-add-entry #(type (second %)))
+(defmulti feed-add-entry (fn [feed item] (type item)))
 
 (defmethod feed-add-entry :mulk.benki.book_marx/bookmark [feed item]
   (doto (.addEntry feed)
