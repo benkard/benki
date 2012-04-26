@@ -16,11 +16,13 @@
   (:import [org.jivesoftware.smack ConnectionConfiguration
                                    ConnectionConfiguration$SecurityMode
                                    XMPPConnection
-                                   MessageListener]))
+                                   MessageListener
+                                   ChatManagerListener]))
 
 
-(defonce xmpp     (atom nil))
-(defonce messages (channel))
+(defonce xmpp        (atom nil))
+(defonce messages    (channel))
+(defonce messages-in (channel))
 
 
 (defn- connect []
@@ -63,7 +65,8 @@
                                 recipient
                                 (reify MessageListener
                                   (processMessage [self chat message]
-                                    nil)))]
+                                    (when-let [body (.getBody message)]
+                                      (enqueue messages-in {:sender recipient, :body body})))))]
           (.sendMessage chat notification))))))
 
 (defn- startup-client []
@@ -71,7 +74,21 @@
                (fn [{targets :targets, msg :message}]
                  (push-message targets msg))))
 
+(defn- handle-incoming-chats []
+  (doto (.getChatManager @xmpp)
+    (.addChatListener
+     (reify ChatManagerListener
+       (chatCreated [self chat local?]
+         (when-not local?
+           (.addMessageListener
+            chat
+            (reify MessageListener
+              (processMessage [self chat message]
+                (when-let [body (.getBody message)]
+                  (enqueue messages-in {:sender (.getParticipant chat) :body body})))))))))))
+
 (defn init-xmpp! []
   (future
     (reconnect!)
+    (handle-incoming-chats)
     (startup-client)))

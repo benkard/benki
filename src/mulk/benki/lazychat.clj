@@ -43,21 +43,13 @@
                     :protected (protected-targets)
                     :public    (cons nil (protected-targets)))))))
 
-(defn push-message-to-xmpp [msg]
-  (let [targets (filter integer? (determine-targets msg))]
-    (enqueue xmpp/messages {:message msg,
-                            :targets targets})))
-
-(defn start-xmpp-pump []
-  (receive-all lafargue-events push-message-to-xmpp))
-
 (defn fill-in-author-details [x]
   x)
 
-(defn create-lazychat-message! [{content  :content,  visibility :visibility
-                                 format   :format,   targets    :targets,
-                                 referees :referees, id         :id}]
-  {:pre [*user*]}
+(defn create-lazychat-message-by-user! [user
+                                        {content  :content,  visibility :visibility
+                                         format   :format,   targets    :targets,
+                                         referees :referees, id         :id}]
   (with-dbt
     (when id
       ;; FIXME: Is this assertion sufficient?  Is it too strict?
@@ -68,7 +60,7 @@
         ["INSERT INTO lazychat_messages(id, author, content, format, visibility)
                VALUES (?, ?, ?, ?, ?)
             RETURNING id"
-         id *user* content format visibility]
+         id user content format visibility]
         (doseq [referee referees]
           (sql/insert-values :lazychat_references
                              [:referrer :referee]
@@ -83,8 +75,28 @@
                     {:content  content,  :visibility visibility,
                      :format   format,   :targets    targets,
                      :referees referees, :id         id,
-                     :author   *user*,   :date       (java.util.Date.)})
+                     :author   user,     :date       (java.util.Date.)})
                    {:type ::lafargue-message}))))))
+
+(defn create-lazychat-message! [msg]
+  {:pre [*user*]}
+  (create-lazychat-message-by-user! *user* msg))
+
+(defn push-message-to-xmpp [msg]
+  (let [targets (filter integer? (determine-targets msg))]
+    (enqueue xmpp/messages {:message msg,
+                            :targets targets})))
+
+(defn- handle-xmpp-message [{sender :sender, body :body}]
+  (let [jid  (first (string/split sender #"/"))
+        user (with-dbt
+               (:user (query1 "SELECT \"user\" FROM user_jids WHERE jid = ?" jid)))]
+    (create-lazychat-message-by-user! user
+                                      {:content    body
+                                       :visibility "protected"
+                                       :format     "markdown"
+                                       :targets    []
+                                       :referees   []})))
 
 (defn select-message [id]
   (let [message  (query1 "SELECT author, content, format, visibility, date
@@ -247,5 +259,5 @@
       (with-dbt (query1 "SELECT NEXTVAL('lazychat_messages_id_seq')")))))
 
 (defn init-lazychat! []
-  (future
-    (receive-all lafargue-events push-message-to-xmpp)))
+  (receive-all lafargue-events push-message-to-xmpp)
+  (receive-all xmpp/messages-in handle-xmpp-message))

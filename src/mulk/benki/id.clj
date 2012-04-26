@@ -82,8 +82,7 @@
 
 (defn show-profile-page []
   (layout profile-page "A Profile Page"
-    [:body
-     [:p "This is a profile page."]]))
+    [:p "This is a profile page."]))
 
 (defn render-xrds [nickname]
   {:status 200

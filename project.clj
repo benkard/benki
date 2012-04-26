@@ -9,6 +9,7 @@
                  [org.clojure/core.match "0.2.0-alpha9"]
                  [org.clojure/core.unify "0.5.1"]
                  [org.clojure/data.codec "0.1.0"]
+                 [org.clojure/data.xml "0.0.3"]
                  [org.clojure/data.zip "0.1.0"]
                  [org.clojure/java.jdbc "0.1.1"]
                  [org.clojure/test.generative "0.1.3"]
