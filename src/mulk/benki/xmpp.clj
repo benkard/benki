@@ -66,7 +66,8 @@
                                 (reify MessageListener
                                   (processMessage [self chat message]
                                     (when-let [body (.getBody message)]
-                                      (enqueue messages-in {:sender recipient, :body body})))))]
+                                      (when-not (re-find #"^\?OTR:" body)
+                                        (enqueue messages-in {:sender recipient, :body body}))))))]
           (.sendMessage chat notification))))))
 
 (defn- startup-client []
@@ -85,7 +86,8 @@
             (reify MessageListener
               (processMessage [self chat message]
                 (when-let [body (.getBody message)]
-                  (enqueue messages-in {:sender (.getParticipant chat) :body body})))))))))))
+                  (when-not (re-find #"^\?OTR:" body)
+                    (enqueue messages-in {:sender (.getParticipant chat) :body body}))))))))))))
 
 (defn init-xmpp! []
   (future
