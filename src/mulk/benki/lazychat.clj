@@ -51,8 +51,8 @@
 (defn start-xmpp-pump []
   (receive-all lafargue-events push-message-to-xmpp))
 
-(defn fill-in-author-details []
-  )
+(defn fill-in-author-details [x]
+  x)
 
 (defn create-lazychat-message! [{content  :content,  visibility :visibility
                                  format   :format,   targets    :targets,
