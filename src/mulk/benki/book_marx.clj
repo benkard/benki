@@ -118,7 +118,7 @@
                            (:maxdate (first results)))
             items  (map #(with-meta
                            (assoc %
-                             (hiccup.core/html (htmlize-description (:description %))))
+                             :html (hiccup.core/html (htmlize-description (:description %))))
                            {:type ::bookmark}) @marks)]
         (generate-feed "Book Marx" last-updated "marx" (link :marx)
                        items)))))
