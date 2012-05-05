@@ -14,7 +14,8 @@
             [aleph.http        :as ahttp]
             [aleph.formats     :as aformats]
             [ring.util.codec   :as codec])
-  (:import [java.math BigDecimal BigInteger]))
+  (:import [java.math BigDecimal BigInteger])
+  (:gen-class))
 
 
 (defn wrap-utf-8 [handler]
@@ -91,13 +92,13 @@
                              {:port      (:web-port @benki-config)
                               :websocket true})))
 
-(defonce server
+(def server (atom nil))
+
+(defn -main [& args]
   (do
     (future (mulk.benki.xmpp/init-xmpp!))
     (future (mulk.benki.lazychat/init-lazychat!))
-    (future (run-server))))
-
-(defn -main [& args]
+    (future (swap! server (run-server))))
   (loop []
     (Thread/sleep 1000000)
     (recur)))
