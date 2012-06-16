@@ -13,7 +13,9 @@
             [lamina.core       :as lamina]
             [aleph.http        :as ahttp]
             [aleph.formats     :as aformats]
-            [ring.util.codec   :as codec])
+            [ring.util.codec   :as codec]
+            [clojure.algo.monads :as m]
+            [clojure.data.json   :as json])
   (:import [java.math BigDecimal BigInteger])
   (:gen-class))
 
@@ -59,6 +61,35 @@
                   (session/get :user))]
       (handler request))))
 
+(defn parse-certificate [cert-data]
+  (let [{modulus :modulus,
+         exponent :exponent,
+         fingerprint :fingerprint,
+         valid-to :valid_to
+         valid-from :valid_from
+         subject-alt-name :subjectaltname
+         subject :subject
+         }
+        cert-data]
+    {:modulus          (bigint (BigInteger. modulus 16))
+     :exponent         (bigint (BigInteger. exponent 16))
+     :fingerprint      fingerprint
+     :valid-to         (org.joda.time.DateTime. (Long. valid-to))
+     :valid-from       (org.joda.time.DateTime. (Long. valid-from))
+     :subject          subject
+     :subject-alt-name subject-alt-name}))
+
+(defn wrap-client-cert [handler]
+  (fn [request]
+    (binding [*client-cert*
+              (m/domonad m/maybe-m
+                         [cert-json (get-in request [:headers "x-mulk-peer-certificate"])
+                          cert-data (json/read-json cert-json)
+                          cert      (parse-certificate cert-data)]
+                cert)]
+      (handler request))))
+
+
 (defn wrap-extension-mimetype [handler]
   (fn [request]
     (let [uri       (codec/url-decode (:uri request))
@@ -81,6 +112,7 @@
   (noir.server/add-middleware #(wrap-utf-8 %))
   (noir.server/add-middleware #(wrap-base-uri %))
   (noir.server/add-middleware #(wrap-auth-token %))
+  (noir.server/add-middleware #(wrap-client-cert %))
   (noir.server/add-middleware #(wrap-cache-control %))
   (noir.server/add-middleware #(ring.middleware.file/wrap-file % "static"))
   (noir.server/add-middleware #(wrap-extension-mimetype %)))

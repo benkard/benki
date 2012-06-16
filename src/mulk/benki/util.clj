@@ -20,6 +20,7 @@
 
 
 (def ^:dynamic *user*)
+(def ^:dynamic *client-cert*)
 
 
 (defonce #^:private finished-initializations (atom #{}))

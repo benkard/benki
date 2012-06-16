@@ -21,6 +21,21 @@ CREATE TABLE openids(
   FOREIGN KEY("user") REFERENCES users
 );
 
+CREATE TABLE rsa_keys(
+  modulus  VARCHAR   NOT NULL,
+  exponent VARCHAR   NOT NULL,
+  PRIMARY KEY(modulus, exponent)
+);
+
+CREATE TABLE user_rsa_keys(
+  "user"   INTEGER   NOT NULL,
+  modulus  VARCHAR   NOT NULL,
+  exponent VARCHAR   NOT NULL,
+  PRIMARY KEY("user", modulus, exponent),
+  FOREIGN KEY("user") REFERENCES users,
+  FOREIGN KEY(modulus, exponent) REFERENCES rsa_keys
+);
+
 CREATE TABLE user_email_addresses(
   "user"       INTEGER   NOT NULL,
   email        VARCHAR   NOT NULL,

@@ -47,6 +47,7 @@
                  [org.pegdown/pegdown "1.1.0"]
                  [jivesoftware/smack "3.1.0"]
                  [jivesoftware/smackx "3.1.0"]
+                 [joda-time/joda-time "2.1"]
                  ]
   :plugins [[lein-swank "1.4.3"]]
   :exclusions [org.clojure/clojure-contrib]  ;you know, the old pre-1.3.0 versions
