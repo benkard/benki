@@ -71,13 +71,15 @@
          subject :subject
          }
         cert-data]
-    {:modulus          (bigint (BigInteger. modulus 16))
-     :exponent         (bigint (BigInteger. exponent 16))
-     :fingerprint      fingerprint
-     :valid-to         (org.joda.time.DateTime. (Long. valid-to))
-     :valid-from       (org.joda.time.DateTime. (Long. valid-from))
-     :subject          subject
-     :subject-alt-name subject-alt-name}))
+    (if modulus
+      {:modulus          (bigint (BigInteger. modulus 16))
+       :exponent         (bigint (BigInteger. exponent 16))
+       :fingerprint      fingerprint
+       :valid-to         (org.joda.time.DateTime. (Long. valid-to))
+       :valid-from       (org.joda.time.DateTime. (Long. valid-from))
+       :subject          subject
+       :subject-alt-name subject-alt-name}
+      nil)))
 
 (defn wrap-client-cert [handler]
   (fn [request]
