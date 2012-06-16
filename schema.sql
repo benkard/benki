@@ -22,15 +22,15 @@ CREATE TABLE openids(
 );
 
 CREATE TABLE rsa_keys(
-  modulus  VARCHAR   NOT NULL,
-  exponent VARCHAR   NOT NULL,
+  modulus  NUMERIC   NOT NULL,
+  exponent NUMERIC   NOT NULL,
   PRIMARY KEY(modulus, exponent)
 );
 
 CREATE TABLE user_rsa_keys(
   "user"   INTEGER   NOT NULL,
-  modulus  VARCHAR   NOT NULL,
-  exponent VARCHAR   NOT NULL,
+  modulus  NUMERIC   NOT NULL,
+  exponent NUMERIC   NOT NULL,
   PRIMARY KEY("user", modulus, exponent),
   FOREIGN KEY("user") REFERENCES users,
   FOREIGN KEY(modulus, exponent) REFERENCES rsa_keys

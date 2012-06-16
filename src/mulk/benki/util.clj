@@ -59,7 +59,7 @@
 
 (defn linkrel [& args]
   (match [(vec args)]
-    [[:login]]           (fmt nil "/login")
+    [[:login]]           (str (:cert-req-base @benki-config) "/login")
     [[:home]]            (fmt nil "/")
     [[:marx]]            (fmt nil "/marx")
     [[:marx :submit]]    (fmt nil "/marx/submit")

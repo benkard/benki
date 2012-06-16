@@ -6,7 +6,8 @@
                   :user "benki"
                   :password ""}
  :websocket-base "ws://localhost:3001"
- :base-uri       "http://localhost:3001"
+ :base-uri       "https://localhost:4333"
+ :cert-req-base  "https://localhost:4334"
  :tag-base       "example.com"
  :web-port       3001
  :mode           :production   ;or :dev

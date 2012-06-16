@@ -19,6 +19,12 @@
 (defonce manager (ConsumerManager.))
 
 
+
+(defn find-user [user-id]
+  (first (if user-id
+           (query "SELECT * FROM users WHERE id = ?" user-id)
+           nil)))
+
 (defn return-from-openid-provider []
   (let [parlist      (ParameterList. (:query-params (request/ring-request)))
         discovered   (session/get :discovered)
@@ -37,9 +43,7 @@
               user-id (if openid
                         (:user openid)
                         nil)
-              user    (first (if user-id
-                               (query "SELECT * FROM users WHERE id = ?" user-id)
-                               nil))]
+              user    (find-user user-id)]
           (if user-id
             (do (session/put! :user user-id)
                 (if-let [return-uri (session/flash-get)]
@@ -101,22 +105,38 @@
     )})
 
 (defpage "/login" []
-  (session/flash-put! (or (session/flash-get)
-                          (get-in (request/ring-request) [:headers "referer"])))
-  (layout login-page-layout "Benki Login"
-    [:div#browserid-box
-     [:h2 "BrowserID login"]
-     [:a#browserid {:href "#"}
-      [:img {:src (resolve-uri "/3rdparty/browserid/sign_in_orange.png")
-             :alt "Sign in using BrowserID"}]]]
-    [:div#openid-login-panel
-     [:h2 "OpenID login"]
-     [:form {:action (resolve-uri "/login/authenticate"),
-             :method "GET"
-             :id     "openid_form"}
-      [:div {:id "openid_choice"}
-       [:p "Please select your OpenID provider:"]
-       [:div {:id "openid_btns"}]]
-      [:div {:id "openid_input_area"}
-       [:input {:type "text", :name "openid_identifier", :id "openid_identifier"}]
-       [:input {:type "submit"}]]]]))
+  (let [return-uri (or (session/flash-get)
+                       (get-in (request/ring-request) [:headers "referer"]))]
+    (with-dbt
+      (if-let [cert-user-id (and *client-cert*
+                                 (:user
+                                  (query1 "SELECT \"user\" FROM user_rsa_keys
+                                            WHERE modulus = (?::NUMERIC)
+                                                  AND exponent = (?::NUMERIC)"
+                                          (str (:modulus *client-cert*))
+                                          (str (:exponent *client-cert*)))))]
+        (let [cert-user (find-user cert-user-id)]
+          (session/put! :user cert-user-id)
+          (if return-uri
+            (redirect return-uri)
+            (layout {} "Authenticated!" [:p "Welcome back, " (:first_name cert-user) "!"])))
+        (do
+          (session/flash-put! return-uri)
+          (layout login-page-layout "Benki Login"
+            [:div#browserid-box
+             [:h2 "BrowserID login"]
+             [:a#browserid {:href "#"}
+              [:img {:src (resolve-uri "/3rdparty/browserid/sign_in_orange.png")
+                     :alt "Sign in using BrowserID"}]]]
+            [:div#openid-login-panel
+             [:h2 "OpenID login"]
+             [:form {:action (resolve-uri "/login/authenticate"),
+                     :method "GET"
+                     :id     "openid_form"}
+              [:div {:id "openid_choice"}
+               [:p "Please select your OpenID provider:"]
+               [:div {:id "openid_btns"}]]
+              [:div {:id "openid_input_area"}
+               [:input {:type "text", :name "openid_identifier", :id "openid_identifier"}]
+               [:input {:type "submit"}]]]]))))))
+  
