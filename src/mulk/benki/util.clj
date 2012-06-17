@@ -74,9 +74,7 @@
     ))
 
 (defn link [& args]
-  (match [(vec args)]
-    [[:login]] (str (:cert-req-base @benki-config) "/login")
-    [args]     (resolve-uri (apply linkrel args))))
+  (resolve-uri (apply linkrel args)))
 
 (defn call-with-auth [thunk]
   (if *user*
@@ -85,7 +83,7 @@
                                  (if-let [q (:query-string (request/ring-request))]
                                    (str "?" q)
                                    "")))
-        (response/redirect (link :login)))))
+        (redirect (link :login)))))
 
 (defmacro with-auth [& body]
   `(call-with-auth (fn [] ~@body)))
