@@ -4,8 +4,11 @@ db
 native
 lib
 static/3rdparty
-
+static/style/orig
 *~
 config.sexp
 pom.xml
+frontend
+mvn-local
+target
 
