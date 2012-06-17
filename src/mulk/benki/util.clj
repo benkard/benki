@@ -74,7 +74,9 @@
     ))
 
 (defn link [& args]
-  (resolve-uri (apply linkrel args)))
+  (match [(vec args)]
+    [[:login]] (str (:cert-req-base @benki-config) "/login")
+    [args]     (resolve-uri (apply linkrel args))))
 
 (defn call-with-auth [thunk]
   (if *user*
