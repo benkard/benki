@@ -5,7 +5,7 @@
         [hiccup core     page-helpers]
         [mulk.benki      util config db])
   (:require [noir server options]
-            [mulk.benki wiki auth book_marx id lazychat xmpp]
+            [mulk.benki wiki auth book_marx id lazychat xmpp genkey]
             [ring.middleware.file]
             [noir.session      :as session]
             [noir.request      :as request]
@@ -128,8 +128,13 @@
 
 (def server (atom nil))
 
+(defn init-security! []
+  (java.security.Security/addProvider
+   (org.bouncycastle.jce.provider.BouncyCastleProvider.)))
+
 (defn -main [& args]
   (do
+    (init-security!)
     (future (mulk.benki.xmpp/init-xmpp!))
     (future (mulk.benki.lazychat/init-lazychat!))
     (future (swap! server (run-server))))

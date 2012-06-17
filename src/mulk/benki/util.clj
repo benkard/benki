@@ -69,6 +69,8 @@
     [[:lafargue :feed]]  (fmt nil "/lafargue/feed")
     [[:lafargue :post]]  (fmt nil "/lafargue/post")
     [[:wiki title & xs]] (fmt nil "/wiki/~a~@[~a~]" title (first xs))
+    [[:keys]]            "/keys"
+    [[:keys :register]]  "/keys/register"
     ))
 
 (defn link [& args]
@@ -116,3 +118,18 @@
 
 (defn sanitize-html [html]
   (Jsoup/clean html (Whitelist/basic)))
+
+
+;;;; * Debugging
+(defonce logger
+  (org.apache.log4j.Logger/getLogger "eu.mulk.benki"))
+
+(defn info [s]
+  (.info logger s))
+
+(defn log [s]
+  (.info logger s))
+
+(defn debug [s]
+  (.debug logger s))
+
