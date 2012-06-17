@@ -83,7 +83,7 @@
                                  (if-let [q (:query-string (request/ring-request))]
                                    (str "?" q)
                                    "")))
-        (response/redirect "/login"))))
+        (response/redirect (link :login)))))
 
 (defmacro with-auth [& body]
   `(call-with-auth (fn [] ~@body)))
