@@ -76,6 +76,9 @@
 (defn link [& args]
   (resolve-uri (apply linkrel args)))
 
+(defn redirect [x]
+  {:status 302, :headers {"Location" x}, :body ""})
+
 (defn call-with-auth [thunk]
   (if *user*
     (thunk)
@@ -87,9 +90,6 @@
 
 (defmacro with-auth [& body]
   `(call-with-auth (fn [] ~@body)))
-
-(defn redirect [x]
-  {:status 302, :headers {"Location" x}, :body ""})
 
 (defn format-date [x]
   (.format (DateFormat/getDateTimeInstance DateFormat/FULL DateFormat/FULL)
