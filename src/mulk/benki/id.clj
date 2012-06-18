@@ -22,12 +22,12 @@
 
 (def profile-base-uri (str (:base-uri @benki-config) "/id/"))
 
-(defn user-owns-nickname? [user nickname]
+(defn nickname-user [nickname]
   (with-dbt
-    (sql/with-query-results results
-      ["SELECT 't' FROM user_nicknames WHERE nickname = ? AND \"user\" = ?"
-       nickname *user*]
-      (doall (seq results)))))
+    (:user (query1 "SELECT \"user\" FROM user_nicknames WHERE nickname = ?" nickname))))
+
+(defn user-owns-nickname? [user nickname]
+  (= (nickname-user nickname) user))
 
 (defn fail-authentication []
   {:status 403, :type "text/plain", :body "Not authorized."})
@@ -80,9 +80,28 @@
 
 (def profile-page {})
 
-(defn show-profile-page []
+(defn show-profile-page [user]
   (layout profile-page "A Profile Page"
-    [:p "This is a profile page."]))
+    [:div {:typeof "foaf:Person"}
+     [:h2 "Public Keys"]
+     [:div {:rel "cert:key"}
+      [:div {:typeof "cert:RSAPublicKey"}
+       [:dl
+        (with-dbt
+          (sql/with-query-results keys ["SELECT * FROM user_rsa_keys WHERE \"user\" = ?" user]
+            (doall
+             (for [{modulus  :modulus,
+                    exponent :exponent}
+                   keys]
+               (list
+                [:dt "Modulus (hex)"]
+                [:dd {:property "cert:modulus"
+                      :datatype "xsd:hexBinary"}
+                 (fmt nil "~X" modulus)]
+                [:dt "Exponent"]
+                [:dd {:property "cert:exponent"
+                      :datatype "xsd:integer"}
+                 (fmt nil "~D" exponent)])))))]]]]))
 
 (defn render-xrds [nickname]
   {:status 200
@@ -111,7 +130,7 @@
   (if (re-find #"application/xrds\+xml"
                (get-in (request/ring-request) [:headers "accept"]))
     (render-xrds nickname)
-    (show-profile-page)))
+    (show-profile-page (nickname-user nickname))))
 
 (defpage [:get  "/~:nickname"] {nickname :nickname}
   (redirect (link :profile nickname)))

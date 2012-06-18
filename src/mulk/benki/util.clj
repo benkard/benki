@@ -36,7 +36,14 @@
 
 ;; defpartial is just defn + html.
 (defpartial layout [kind title & content]
-  (html5 {:xml? true}
+  (xml-declaration "UTF-8")
+  (doctype :html5)
+  [:html {:xmlns       "http://www.w3.org/1999/xhtml"
+          "xml:lang"   "en"
+          :lang        "en"
+          "xmlns:cert" "http://www.w3.org/ns/auth/cert#"
+          "xmlns:foaf" "http://xmlns.com/foaf/0.1/"
+          "xmlns:xsd"  "http://www.w3.org/2001/XMLSchema#"}
    [:head {:data-logged-in      (if *user* "true" "false"),
            :data-websocket-base (:websocket-base @benki-config)}
     [:title title]
@@ -50,12 +57,14 @@
     [:link {:type "text/css"
             :rel  "stylesheet"
             :href (resolve-uri "/style/benki.css")}]
+    [:link {:rel  "profile"
+            :href "http://www.w3.org/1999/xhtml/vocab"}]
     [:meta {:content "initial-scale=1.0, width=device-width"
             :name    "viewport"}]
     (:head kind)]
    [:body [:h1 title]
     content
-    (:bottom kind)]))
+    (:bottom kind)]])
 
 (defmulti user-nickname type)
 (defmethod user-nickname java.lang.String [x]
