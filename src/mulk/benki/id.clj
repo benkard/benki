@@ -126,11 +126,14 @@
 (defpage [:post "/openid/api"] {}
   (process-openid-request))
 
-(defpage [:get  "/id/:nickname"] {nickname :nickname}
+(defn render-profile-page [nickname]
   (if (re-find #"application/xrds\+xml"
                (get-in (request/ring-request) [:headers "accept"]))
     (render-xrds nickname)
     (show-profile-page (nickname-user nickname))))
 
+(defpage [:get  "/id/:nickname"] {nickname :nickname}
+  (render-profile-page nickname))
+
 (defpage [:get  "/~:nickname"] {nickname :nickname}
-  (redirect (link :profile nickname)))
+  (render-profile-page nickname))
