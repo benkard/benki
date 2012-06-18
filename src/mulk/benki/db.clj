@@ -1,6 +1,6 @@
 (ns mulk.benki.db
   (:refer-clojure)
-  (:use [mulk.benki util config])
+  (:use [mulk.benki config])
   (:require [clojure.java.jdbc :as sql]))
 
 

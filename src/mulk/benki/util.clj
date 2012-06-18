@@ -3,7 +3,7 @@
   (:use [hiccup core page-helpers]
         [clojure.core.match :only [match]]
         noir.core
-        [mulk.benki config])
+        [mulk.benki config db])
   (:require [noir.session  :as session]
             [noir.request  :as request]
             [noir.response :as response]
@@ -57,6 +57,13 @@
     content
     (:bottom kind)]))
 
+(defmulti user-nickname type)
+(defmethod user-nickname java.lang.String [x]
+  x)
+(defmethod user-nickname java.lang.Number [x]
+  (with-dbt
+    (:nickname (query1 "SELECT * FROM user_nicknames WHERE \"user\" = ?" x))))
+
 (defn linkrel [& args]
   (match [(vec args)]
     [[:login]]           (str (:cert-req-base @benki-config) "/login")
@@ -71,6 +78,7 @@
     [[:wiki title & xs]] (fmt nil "/wiki/~a~@[~a~]" title (first xs))
     [[:keys]]            "/keys"
     [[:keys :register]]  "/keys/register"
+    [[:profile user]]    (fmt nil "/~~~a" (user-nickname user))
     ))
 
 (defn link [& args]

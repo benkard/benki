@@ -24,7 +24,10 @@
             BcRSAContentSignerBuilder]
            [org.bouncycastle.asn1.x509
             X509Name
-            SubjectPublicKeyInfo]
+            X509Extension
+            SubjectPublicKeyInfo
+            GeneralName
+            GeneralNames]
            [org.bouncycastle.asn1.x500
             X500Name]))
 
@@ -70,7 +73,7 @@
 (defn twenty-years-from-now []
   (java.util.Date. (+ (* 20 3600 24 365 1000) (.getTime (now)))))
 
-(defn sign-spkac [spkac]
+(defn sign-spkac [spkac user]
   (let [serial     (swap! cert-serial inc)
         pubkeyinfo (-> spkac
                        (.getPublicKeyAndChallenge)
@@ -80,10 +83,16 @@
                     (java.math.BigInteger. (str serial))
                     (now)
                     (twenty-years-from-now)
-                    (X500Name. "CN=Benki User")
-                    pubkeyinfo)
-        cert        (.build builder cert-signer)]
-    cert))
+                    (X500Name. (fmt nil "CN=Benki User (~a)" (user-nickname user)))
+                    pubkeyinfo)]
+    (.addExtension builder
+                   X509Extension/subjectAlternativeName
+                   true
+                   (GeneralNames.
+                    (GeneralName.
+                     GeneralName/uniformResourceIdentifier
+                     (link :profile user))))
+    (.build builder cert-signer)))
 
 (defpage "/genkey" []
   (redirect "/keys"))
@@ -100,7 +109,7 @@
       ;;(redirect (linkrel :keys))
       {:status  200
        :headers {"Content-Type" "application/x-x509-user-cert"}
-       :body    (.getEncoded (sign-spkac spkac))})))
+       :body    (.getEncoded (sign-spkac spkac *user*))})))
 
 (defpage "/keys" []
   (with-auth

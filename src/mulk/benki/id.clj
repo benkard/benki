@@ -112,3 +112,6 @@
                (get-in (request/ring-request) [:headers "accept"]))
     (render-xrds nickname)
     (show-profile-page)))
+
+(defpage [:get  "/~:nickname"] {nickname :nickname}
+  (redirect (link :profile nickname)))
