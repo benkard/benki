@@ -84,16 +84,16 @@
   (layout profile-page "A Profile Page"
     [:div {:typeof "foaf:Person"}
      [:h2 "Public Keys"]
-     [:div {:rel "cert:key"}
-      [:div {:typeof "cert:RSAPublicKey"}
-       [:dl
-        (with-dbt
-          (sql/with-query-results keys ["SELECT * FROM user_rsa_keys WHERE \"user\" = ?" user]
-            (doall
-             (for [{modulus  :modulus,
-                    exponent :exponent}
-                   keys]
-               (list
+     (with-dbt
+       (sql/with-query-results keys ["SELECT * FROM user_rsa_keys WHERE \"user\" = ?" user]
+         (doall
+          (for [{modulus  :modulus,
+                 exponent :exponent}
+                keys]
+            (list
+             [:div {:rel "cert:key"}
+              [:div {:typeof "cert:RSAPublicKey"}
+               [:dl
                 [:dt "Modulus (hex)"]
                 [:dd {:property "cert:modulus"
                       :datatype "xsd:hexBinary"}
@@ -101,7 +101,7 @@
                 [:dt "Exponent"]
                 [:dd {:property "cert:exponent"
                       :datatype "xsd:integer"}
-                 (fmt nil "~D" exponent)])))))]]]]))
+                 (fmt nil "~D" exponent)]]]])))))]))
 
 (defn render-xrds [nickname]
   {:status 200
