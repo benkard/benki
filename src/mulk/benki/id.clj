@@ -80,11 +80,19 @@
 
 (def profile-page {})
 
+(defn user-name [uid]
+  (let [user (query1 "SELECT first_name, last_name FROM users WHERE id = ?" uid)]
+    (fmt nil "~A ~A"
+         (:first_name user)
+         (:last_name user))))
+
 (defn show-profile-page [user]
-  (layout profile-page "A Profile Page"
-    [:div {:typeof "foaf:Person"}
-     [:h2 "Public Keys"]
-     (with-dbt
+  (with-dbt
+    (layout profile-page "A Profile Page"
+      [:div {:typeof "foaf:Person"}
+       [:div {:property "foaf:name"}
+        (user-name user)]
+       [:h2 "Public Keys"]
        (sql/with-query-results keys ["SELECT * FROM user_rsa_keys WHERE \"user\" = ?" user]
          (doall
           (for [{modulus  :modulus,
@@ -101,7 +109,7 @@
                 [:dt "Exponent"]
                 [:dd {:property "cert:exponent"
                       :datatype "xsd:integer"}
-                 (fmt nil "~D" exponent)]]]])))))]))
+                 (fmt nil "~D" exponent)]]]]))))])))
 
 (defn render-xrds [nickname]
   {:status 200
