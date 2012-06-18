@@ -80,20 +80,22 @@
 
 (def profile-page {})
 
-(defn user-name [uid]
-  (let [user (query1 "SELECT first_name, last_name FROM users WHERE id = ?" uid)]
-    (fmt nil "~A ~A"
-         (:first_name user)
-         (:last_name user))))
+(defn find-user [uid]
+  (query1 "SELECT first_name, last_name FROM users WHERE id = ?" uid))
 
-(defn show-profile-page [user]
+(defn show-profile-page [uid]
   (with-dbt
     (layout profile-page "A Profile Page"
       [:div {:typeof "foaf:Person"}
        [:div {:property "foaf:name"}
-        (user-name user)]
+        (:first_name (find-user uid)) " " (:last_name (find-user uid))]
+       [:div {:style "display: none"}
+        [:span {:property "foaf:givenName"}
+         (:first_name (find-user uid))]
+        [:span {:property "foaf:familyName"}
+         (:last_name (find-user uid))]]
        [:h2 "Public Keys"]
-       (sql/with-query-results keys ["SELECT * FROM user_rsa_keys WHERE \"user\" = ?" user]
+       (sql/with-query-results keys ["SELECT * FROM user_rsa_keys WHERE \"user\" = ?" uid]
          (doall
           (for [{modulus  :modulus,
                  exponent :exponent}
