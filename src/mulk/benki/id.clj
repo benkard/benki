@@ -86,7 +86,7 @@
 (defn show-profile-page [uid]
   (with-dbt
     (layout profile-page "A Profile Page"
-      [:div {:typeof "foaf:Person"}
+      [:div {:about "" :typeof "foaf:Person"}
        [:div {:property "foaf:name"}
         (:first_name (find-user uid)) " " (:last_name (find-user uid))]
        [:div {:style "display: none"}
