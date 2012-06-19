@@ -20,7 +20,8 @@
   (doto (ServerManager.)
     (.setOPEndpointUrl (str (:base-uri @benki-config) "/openid"))))
 
-(def profile-base-uri (str (:base-uri @benki-config) "/id/"))
+(def profile-base-uris #{(str (:base-uri @benki-config) "/id/")
+                         (str (:base-uri @benki-config) "/~")})
 
 (defn nickname-user [nickname]
   (with-dbt
@@ -33,11 +34,13 @@
   {:status 403, :type "text/plain", :body "Not authorized."})
 
 (defn nickname-from-profile-uri [uri]
-  (let [base-uri (.substring uri 0 (.length profile-base-uri))
-        nickname (.substring uri (.length profile-base-uri))]
-    (if (= base-uri profile-base-uri)
-      nickname
-      nil)))
+  (some (fn [profile-base-uri]
+          (let [base-uri (.substring uri 0 (.length profile-base-uri))
+                nickname (.substring uri (.length profile-base-uri))]
+            (if (= base-uri profile-base-uri)
+              nickname
+              nil)))
+        profile-base-uris))
 
 (defn format-openid-response [s]
   {:status 200, :type "text/plain", :body s})
