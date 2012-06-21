@@ -59,18 +59,7 @@
 
 
 
-(defn htmlize-description [text]
-  (letfn [(listify [par]
-            (when (re-matches #"^(?msu)\s*\*\s+.*" par)
-              [:ul {}
-               (map (fn [item] [:li {} item])
-                    (filter #(not (= "" (string/trim %)))
-                            (string/split par #"(?su)(\n|^)\s*\*\s+")))]))]
-    (let [input (escape-html text)]
-      (map (fn [par]
-             (or (listify par)
-                 [:p {} par]))
-           (string/split input #"\n\s*?\n")))))
+(def htmlize-description (comp sanitize-html markdown->html))
 
 (defn bookmarks-visible-by [user]
   (-> bookmarks
