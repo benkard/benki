@@ -1,6 +1,6 @@
 (defproject benki "0.0.0-SNAPSHOT"
   :description "The Benkard Family Hub"
-  :dependencies [[org.clojure/clojure "1.3.0"]
+  :dependencies [[org.clojure/clojure "1.4.0"]
 
                  ;; Clojure Contrib
                  [org.clojure/algo.generic "0.1.0"]
