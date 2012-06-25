@@ -1,7 +1,7 @@
 (ns mulk.benki.id
   (:refer-clojure)
   (:use [clojure         core repl pprint]
-        [hiccup core     page-helpers]
+        [hiccup          core page]
         [mulk.benki      config util db]
         [clojure.core.match
          :only [match]]

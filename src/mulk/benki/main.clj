@@ -2,9 +2,10 @@
   (:refer-clojure)
   (:use [clojure         core repl pprint]
         noir.core
-        [hiccup core     page-helpers]
+        [hiccup          core page]
         [mulk.benki      util config db])
-  (:require [noir server options]
+  (:require [noir.core]
+            [noir server options]
             [mulk.benki wiki auth book_marx id lazychat xmpp genkey]
             [ring.middleware.file]
             [noir.session      :as session]
@@ -15,10 +16,16 @@
             [aleph.formats     :as aformats]
             [ring.util.codec   :as codec]
             [clojure.algo.monads :as m]
-            [clojure.data.json   :as json])
+            [clojure.data.json   :as json]
+            )
   (:import [java.math BigDecimal BigInteger])
   (:gen-class))
 
+
+(defn wrap-missing-status-code [handler]
+  (fn [request]
+    (let [response (handler request)]
+      (assoc response :status (get response :status 404)))))
 
 (defn wrap-utf-8 [handler]
   (fn [request]
@@ -29,12 +36,6 @@
                (re-matches #"^(text/html|text/plain|application/xhtml+xml|text/xml|application/atom+xml)$" ctype))
         (assoc-in response [:headers "Content-Type"] utf8ctype)
         response))))
-
-(defn wrap-base-uri [handler]
-  (fn [request]
-    (let [base-uri (:base-uri @benki-config)]
-      (hiccup.core/with-base-url base-uri
-        ((noir.options/wrap-options handler {:base-url base-uri}) request)))))
 
 (defn wrap-cache-control [handler]
   (fn [request]
@@ -111,8 +112,8 @@
         response))))
 
 (do-once ::init
+  (noir.server/add-middleware #(wrap-missing-status-code %))
   (noir.server/add-middleware #(wrap-utf-8 %))
-  (noir.server/add-middleware #(wrap-base-uri %))
   (noir.server/add-middleware #(wrap-auth-token %))
   (noir.server/add-middleware #(wrap-client-cert %))
   (noir.server/add-middleware #(wrap-cache-control %))

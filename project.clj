@@ -21,17 +21,17 @@
                  [org.clojure/tools.trace "0.7.1"]
 
                  ;; Web app utilities
-                 [ring "1.0.2"]
-                 [noir "1.2.1"]
-                 [hiccup "0.3.7"]
+                 [ring "1.1.1"]
+                 [noir "1.3.0-beta10"]
+                 [hiccup "1.0.0"]
                  [cssgen "0.2.5"]
-                 [aleph "0.2.1-beta2"]
-                 [noir-async "1.0.0-SNAPSHOT"]
+                 [aleph "0.3.0-alpha2"]
+                 [lamina "0.5.0-alpha3"]
+                 [noir-async "1.1.0-beta1"]
 
                  ;; Relational database access
                  [clojureql "1.0.3"]
-                 [korma "0.2.1"]
-                 [postgresql "9.0-801.jdbc4"]
+                 [postgresql "9.1-901.jdbc4"]
                  [org.clojure/java.jdbc "0.1.1"]
 
                  ;; Additional libraries
@@ -40,6 +40,7 @@
                  [org.openid4java/openid4java-server   "0.9.6" :extension "pom"]
                  [org.openid4java/openid4java-xri      "0.9.6" :extension "pom"]
                  [org.openid4java/openid4java-infocard "0.9.6" :extension "pom"]
+                 [xerces "2.4.0"]  ;log4j needs this; OpenID4Java needs log4j
                  [org.jsoup/jsoup "1.6.1"]
                  [org.apache.abdera/abdera-parser       "1.1.2"]
                  [org.apache.ws.commons.axiom/axiom-api "1.2.12"]
@@ -48,14 +49,29 @@
                  [jivesoftware/smack "3.1.0"]
                  [jivesoftware/smackx "3.1.0"]
                  [joda-time/joda-time "2.1"]
+                 ;;[org.bouncycastle/bcmail-jdk15on "1.46"]
                  [org.bouncycastle/bcprov-jdk15on "1.47"]
+                 ;;[org.bouncycastle/bcpg-jdk15on "1.46"]
                  [org.bouncycastle/bcpkix-jdk15on "1.47"]
-                 ]
-  :plugins [[lein-swank "1.4.3"]]
-  :exclusions [org.clojure/clojure-contrib]  ;you know, the old pre-1.3.0 versions
+                 ;;[org.bouncycastle/bcprov-ext-jdk15on "1.46"]
+                 ;;[org.bouncycastle/bctsp-jdk15on "1.46"]
+
+                 ;; Semantic Web/RDF stuff
+                 [org.apache.jena/jena-arq "2.9.1"]
+                 [org.apache.jena/jena-tdb "0.9.1"]
+                 [org.apache.jena/jena-larq "1.0.0-incubating"]
+                 [org.apache.jena/jena-iri "0.9.1"]]
+  :plugins [[lein-swank "1.4.3"]
+            [lein-ring "0.6.6"]]
+  :exclusions [org.clojure/clojure-contrib  ;you know, the old pre-1.3.0 versions
+               org.clojure/clojure          ;so that we can enforce our preferred version
+               org.clojure.contrib/prxml]
   ;;:hooks [leiningen.hooks.difftest]
   ;;:warn-on-reflection true     ;breaks M-x clojure-jack-in
-  :repositories {"sonatype-snapshots"
+  :profiles {:dev    {}
+             :tomcat {:plugins [[lein-ring "0.6.6"]]}}
+  :repositories {
+                 "sonatype-snapshots"
                  ;;https confuses leiningen (but not cake)
                  {:url "http://oss.sonatype.org/content/repositories/snapshots/"
                   :snapshots true},
@@ -80,4 +96,3 @@
   ;;:jvm-opts ["-Xms32m"]
   :main mulk.benki.main
   :min-lein-version "2.0.0")
-

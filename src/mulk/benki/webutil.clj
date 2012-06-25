@@ -1,6 +1,6 @@
 (ns mulk.benki.webutil
   (:refer-clojure)
-  (:use [hiccup      core page-helpers]
+  (:use [hiccup      core page]
         [clojure.core.match :only [match]]
         noir.core
         [mulk.benki  db util])

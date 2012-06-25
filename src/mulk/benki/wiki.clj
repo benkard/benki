@@ -2,12 +2,13 @@
   (:refer-clojure :exclude [distinct conj! case compile drop take sort disj!
                             resultset-seq])
   (:use [clojure         repl pprint]
-        [hiccup          core page-helpers]
-        [hiccup.core     :only [escape-html]]
+        [hiccup          core page]
         [mulk.benki      util db]
         [clojure.core.match
          :only [match]]
         [clojureql core predicates]
+        [hiccup.util
+         :only [escape-html]]
         noir.core)
   (:require [noir.session      :as session]
             [noir.response     :as response]

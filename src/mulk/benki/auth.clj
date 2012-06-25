@@ -1,7 +1,7 @@
 (ns mulk.benki.auth
   (:refer-clojure)
   (:use [clojure         core repl pprint]
-        [hiccup core     page-helpers]
+        [hiccup          core page]
         [mulk.benki      config util db]
         [clojure.core.match
          :only [match]]
@@ -46,7 +46,7 @@
               user    (find-user user-id)]
           (if user-id
             (do (session/put! :user user-id)
-                (if-let [return-uri (session/flash-get)]
+                (if-let [return-uri (session/flash-get ::return-uri)]
                   (redirect return-uri)
                   (layout {} "Authenticated!" [:p "Welcome back, " (:first_name user) "!"])))
             (layout "Authentication Failed"
@@ -69,7 +69,7 @@
         (let [record  (first (query "SELECT * FROM user_email_addresses WHERE email = ?" email))
               user-id (and record (:user record))]
           (if user-id
-            (let [return-uri (session/flash-get)]
+            (let [return-uri (session/flash-get ::return-uri)]
               (session/put! :user user-id)
               (response/json {:email email, :returnURI return-uri}))
             {:status 422,
@@ -105,7 +105,7 @@
     )})
 
 (defpage "/login" []
-  (let [return-uri (or (session/flash-get)
+  (let [return-uri (or (session/flash-get ::return-uri)
                        (get-in (request/ring-request) [:headers "referer"]))]
     (with-dbt
       (if-let [cert-user-id (and *client-cert*
@@ -121,7 +121,7 @@
             (redirect return-uri)
             (layout {} "Authenticated!" [:p "Welcome back, " (:first_name cert-user) "!"])))
         (do
-          (session/flash-put! return-uri)
+          (session/flash-put! ::return-uri return-uri)
           (layout login-page-layout "Benki Login"
             [:div#browserid-box
              [:h2 "BrowserID login"]

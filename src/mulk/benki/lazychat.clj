@@ -1,16 +1,16 @@
 (ns mulk.benki.lazychat
   (:refer-clojure)
   (:use [clojure     repl]
-        [hiccup      core page-helpers]
+        [hiccup      core page]
         [noir        core]
         [noir-async  core]
         [mulk.benki  auth config db util webutil feed]
         ;;
         [clojure.core.match :only [match]]
-        [hiccup.core        :only [escape-html]]
         [ring.util.codec    :only [url-encode]]
         [lamina.core        :only [channel enqueue enqueue-and-close receive-all
-                                   map* filter*]])
+                                   map* filter*]]
+        [hiccup.util        :only [escape-html]])
   (:require [clojure.algo.monads  :as m]
             [clojure.java.jdbc    :as sql]
             [clojure.string       :as string]

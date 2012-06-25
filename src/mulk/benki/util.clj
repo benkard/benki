@@ -1,8 +1,8 @@
 (ns mulk.benki.util
   (:refer-clojure)
-  (:use [hiccup core page-helpers]
+  (:use [hiccup     core page]
         [clojure.core.match :only [match]]
-        noir.core
+        [noir       core]
         [mulk.benki config db])
   (:require [noir.session  :as session]
             [noir.request  :as request]
@@ -24,6 +24,11 @@
 
 
 (defonce #^:private finished-initializations (atom #{}))
+
+
+(defn resolve-uri [uri]
+  (.toString (.resolve (java.net.URI. (:base-uri @benki-config)) uri)))
+
 
 (defmacro do-once [key & body]
   `(while (not (@(deref #'finished-initializations) key))
@@ -51,7 +56,7 @@
     [:script {:type "text/javascript"
               :src (resolve-uri "/3rdparty/jquery/jquery-1.7.min.js")}]
     [:script {:type "text/javascript"
-              :src (resolve-uri "https://browserid.org/include.js")}]
+              :src "https://browserid.org/include.js"}]
     [:script {:type "text/javascript"
               :src (resolve-uri "/js/browserid.js")}]
     [:link {:type "text/css"
@@ -99,7 +104,8 @@
 (defn call-with-auth [thunk]
   (if *user*
     (thunk)
-    (do (session/flash-put! (str (:uri (request/ring-request))
+    (do (session/flash-put! :mulk.benki.auth/return-uri
+                            (str (:uri (request/ring-request))
                                  (if-let [q (:query-string (request/ring-request))]
                                    (str "?" q)
                                    "")))

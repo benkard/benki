@@ -1,11 +1,11 @@
 (ns mulk.benki.book_marx
   (:refer-clojure)
   (:use [clojure         repl]
-        [hiccup core     page-helpers]
+        [hiccup          core page]
         [clojureql       predicates]
         [clojure.core.match :only [match]]
-        [hiccup.core        :only [escape-html]]
         [ring.util.codec    :only [url-encode]]
+        [hiccup.util        :only [escape-html]]
         noir.core
         [mulk.benki util db auth config webutil feed])
   (:require [clojure.algo.monads  :as m]
