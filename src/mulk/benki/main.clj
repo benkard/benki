@@ -16,8 +16,7 @@
             [aleph.formats     :as aformats]
             [ring.util.codec   :as codec]
             [clojure.algo.monads :as m]
-            [clojure.data.json   :as json]
-            )
+            [clojure.data.json   :as json])
   (:import [java.math BigDecimal BigInteger])
   (:gen-class))
 
@@ -25,6 +24,9 @@
 (defn wrap-missing-status-code [handler]
   (fn [request]
     (let [response (handler request)]
+      ;; NB. This is a work-around for aleph.http not accepting
+      ;; responses that do not contain a :status property.  This
+      ;; includes `nil` responses.
       (assoc response :status (get response :status 404)))))
 
 (defn wrap-utf-8 [handler]
@@ -112,6 +114,7 @@
         response))))
 
 (do-once ::init
+  (noir.server/add-middleware #(hiccup.middleware/wrap-base-url % (:base-uri @benki-config)))
   (noir.server/add-middleware #(wrap-missing-status-code %))
   (noir.server/add-middleware #(wrap-utf-8 %))
   (noir.server/add-middleware #(wrap-auth-token %))
@@ -122,7 +125,9 @@
 
 (defn run-server []
   (let [mode         (or (:mode @benki-config) :production)
-        noir-handler (noir.server/gen-handler {:mode mode})]
+        noir-handler (noir.server/gen-handler {:mode mode,
+                                               :ns 'mulk.benki,
+                                               :base-url (:base-uri @benki-config)})]
     (ahttp/start-http-server (ahttp/wrap-ring-handler noir-handler)
                              {:port      (:web-port @benki-config)
                               :websocket true})))
