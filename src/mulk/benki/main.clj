@@ -3,11 +3,11 @@
   (:use [clojure         core repl pprint]
         noir.core
         [hiccup          core page]
-        [mulk.benki      util config db])
+        [mulk.benki      config db util])
   (:require [noir.core]
             [noir server options]
-            [mulk.benki wiki auth book_marx id lazychat xmpp genkey]
             [ring.middleware.file]
+            [ring.middleware.file-info]
             [noir.session      :as session]
             [noir.request      :as request]
             [clojure.java.jdbc :as sql]
@@ -114,6 +114,7 @@
         response))))
 
 (do-once ::init
+  (noir.server/add-middleware #(ring.middleware.file-info/wrap-file-info %))
   (noir.server/add-middleware #(hiccup.middleware/wrap-base-url % (:base-uri @benki-config)))
   (noir.server/add-middleware #(wrap-missing-status-code %))
   (noir.server/add-middleware #(wrap-utf-8 %))
@@ -140,9 +141,12 @@
 
 (defn -main [& args]
   (do
+    (noir.server/load-views-ns 'mulk.benki)
     (init-security!)
-    (future (mulk.benki.xmpp/init-xmpp!))
-    (future (mulk.benki.lazychat/init-lazychat!))
+    (future (require 'mulk.benki.xmpp)
+            ((ns-resolve 'mulk.benki.xmpp 'init-xmpp!)))
+    (future (require 'mulk.benki.lazychat)
+            ((ns-resolve 'mulk.benki.lazychat 'init-lazychat!)))
     (future (swap! server (run-server))))
   (loop []
     (Thread/sleep 1000000)
