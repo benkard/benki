@@ -113,7 +113,10 @@
         (assoc-in response [:headers "Content-Type"] exttype)
         response))))
 
-(do-once ::init
+(defn init-config! []
+  (swap! benki-config (read-string (slurp (.getFile (clojure.java.io/resource "config.sexp"))))))
+
+(defn init-middleware! []
   (noir.server/add-middleware #(ring.middleware.file-info/wrap-file-info %))
   (noir.server/add-middleware #(hiccup.middleware/wrap-base-url % (:base-uri @benki-config)))
   (noir.server/add-middleware #(wrap-missing-status-code %))
@@ -142,6 +145,8 @@
 
 (defn -main [& args]
   (do
+    (init-config!)
+    (init-middleware!)
     (noir.server/load-views-ns 'mulk.benki)
     (init-security!)
     (future (require 'mulk.benki.xmpp)

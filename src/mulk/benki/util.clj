@@ -7,7 +7,8 @@
   (:require [noir.session  :as session]
             [noir.request  :as request]
             [noir.response :as response]
-            [clojure.java.jdbc :as sql])
+            [clojure.java.jdbc :as sql]
+            [clojure.pprint])
   (:import [java.text DateFormat]
            [java.security SecureRandom]
            [java.math BigInteger]
@@ -92,8 +93,8 @@
     [[:wiki title & xs]] (fmt nil "/wiki/~a~@[~a~]" title (first xs))
     [[:keys]]            "/keys"
     [[:keys :register]]  "/keys/register"
-    [[:profile user]]    (fmt nil "/~~~a" (user-nickname user))
-    ))
+    [[:profile user]]    (fmt nil "/~~~a" (user-nickname user))))
+
 
 (defn link [& args]
   (resolve-uri (apply linkrel args)))

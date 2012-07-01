@@ -74,8 +74,7 @@
                  [org.apache.jena/jena-tdb "0.9.1"]
                  [org.apache.jena/jena-larq "1.0.0-incubating"]
                  [org.apache.jena/jena-iri "0.9.1"]]
-  :plugins [[lein-swank "1.4.3"]
-            [lein-ring "0.6.6"]]
+  :plugins [[lein-swank "1.4.3"]]
   :exclusions [org.clojure/clojure-contrib  ;you know, the old pre-1.3.0 versions
                org.clojure/clojure          ;so that we can enforce our preferred version
                org.clojure.contrib/prxml]
