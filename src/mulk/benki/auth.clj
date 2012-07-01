@@ -13,7 +13,8 @@
             [clojure.java.jdbc :as sql]
             [com.twinql.clojure.http :as http])
   (:import [org.openid4java.consumer ConsumerManager]
-           [org.openid4java.message ParameterList]))
+           [org.openid4java.message ParameterList]
+           [net.java.dev.sommer.foafssl.claims WebIdClaim]))
 
 
 (defonce manager (ConsumerManager.))
@@ -104,6 +105,25 @@
     [:script {:type "text/javascript", :src (resolve-uri "/js/openid-login.js")}]
     )})
 
+(defn try-webid [cert]
+  (log (fmt nil "Attempting WebID authentication."))
+  (let [webid (second (re-find #"^URI:(.*)" (:subject-alt-name cert)))
+        modulus (:modulus cert)
+        exponent (:exponent cert)
+        pubkey
+        (.generatePublic (java.security.KeyFactory/getInstance
+                          "RSA")
+                         (java.security.spec.RSAPublicKeySpec.
+                          (BigInteger. (str modulus)) (BigInteger. (str exponent))))]
+    (log (fmt nil "Verifying WebID: ~a" webid))
+    (if (.verify (WebIdClaim. (java.net.URI. webid) pubkey))
+      (do
+        (log "WebID verified!")
+        (with-dbt
+          (:user
+           (query1 "SELECT \"user\" FROM webids WHERE webid = ?" webid))))
+      (log "WebID verification failed."))))
+
 (defpage "/login" []
   (let [return-uri (or (session/flash-get ::return-uri)
                        (get-in (request/ring-request) [:headers "referer"]))]
@@ -120,23 +140,29 @@
           (if return-uri
             (redirect return-uri)
             (layout {} "Authenticated!" [:p "Welcome back, " (:first_name cert-user) "!"])))
-        (do
-          (session/flash-put! ::return-uri return-uri)
-          (layout login-page-layout "Benki Login"
-            [:div#browserid-box
-             [:h2 "BrowserID login"]
-             [:a#browserid {:href "#"}
-              [:img {:src (resolve-uri "/3rdparty/browserid/sign_in_orange.png")
-                     :alt "Sign in using BrowserID"}]]]
-            [:div#openid-login-panel
-             [:h2 "OpenID login"]
-             [:form {:action (resolve-uri "/login/authenticate"),
-                     :method "GET"
-                     :id     "openid_form"}
-              [:div {:id "openid_choice"}
-               [:p "Please select your OpenID provider:"]
-               [:div {:id "openid_btns"}]]
-              [:div {:id "openid_input_area"}
-               [:input {:type "text", :name "openid_identifier", :id "openid_identifier"}]
-               [:input {:type "submit"}]]]]))))))
+        (if-let [webid-user-id (and *client-cert* (try-webid *client-cert*))]
+          (let [cert-user (find-user webid-user-id)]
+            (session/put! :user webid-user-id)
+            (if return-uri
+              (redirect return-uri)
+              (layout {} "Authenticated!" [:p "Welcome back, " (:first_name cert-user) "!"])))
+          (do
+            (session/flash-put! ::return-uri return-uri)
+            (layout login-page-layout "Benki Login"
+              [:div#browserid-box
+               [:h2 "BrowserID login"]
+               [:a#browserid {:href "#"}
+                [:img {:src (resolve-uri "/3rdparty/browserid/sign_in_orange.png")
+                       :alt "Sign in using BrowserID"}]]]
+              [:div#openid-login-panel
+               [:h2 "OpenID login"]
+               [:form {:action (resolve-uri "/login/authenticate"),
+                       :method "GET"
+                       :id     "openid_form"}
+                [:div {:id "openid_choice"}
+                 [:p "Please select your OpenID provider:"]
+                 [:div {:id "openid_btns"}]]
+                [:div {:id "openid_input_area"}
+                 [:input {:type "text", :name "openid_identifier", :id "openid_identifier"}]
+                 [:input {:type "submit"}]]]])))))))
   

@@ -41,6 +41,9 @@
                  [org.openid4java/openid4java-xri      "0.9.6" :extension "pom"]
                  [org.openid4java/openid4java-infocard "0.9.6" :extension "pom"]
                  [xerces "2.4.0"]  ;log4j needs this; OpenID4Java needs log4j
+                 [xerces/xercesImpl "2.10.0"]  ;java-rdfa needs this
+                 [org.slf4j/slf4j-jcl "1.6.6"]  ;Jena needs this
+                 ;;[org.slf4j/slf4j-log4j12 "1.6.6"]  ;doesn't seem to suffice for Jena
                  [org.jsoup/jsoup "1.6.1"]
                  [org.apache.abdera/abdera-parser       "1.1.2"]
                  [org.apache.ws.commons.axiom/axiom-api "1.2.12"]
@@ -57,7 +60,17 @@
                  ;;[org.bouncycastle/bctsp-jdk15on "1.46"]
 
                  ;; Semantic Web/RDF stuff
+                 ;;[net.java.dev.sommer/foafssl "0.3.1" :extension "pom"]
+                 ;; [net.java.dev.sommer/foafssl-verifier "0.3.1"]
+                 ;; [net.java.dev.sommer/foafssl-filter "0.3.1"]
+                 [net.java.dev.sommer/foafssl-verifier "0.5-SNAPSHOT"]
+                 [net.java.dev.sommer/foafssl-verifier-sesame "0.5-SNAPSHOT"]
+                 ;;[com.hp.hpl.jena/jena "2.6.4"]
+                 [net.rootdev/java-rdfa "0.4.2"]
+                 [net.rootdev/java-rdfa-htmlparser "0.4.2" :extension "pom"]
+                 ;;[nu.validator.htmlparser/htmlparser "1.4"]
                  [org.apache.jena/jena-arq "2.9.1"]
+                 [org.apache.jena/jena-core "2.7.1"]
                  [org.apache.jena/jena-tdb "0.9.1"]
                  [org.apache.jena/jena-larq "1.0.0-incubating"]
                  [org.apache.jena/jena-iri "0.9.1"]]
@@ -91,6 +104,9 @@
                   :snapshots false}
                  "scala-releases"  ;pegdown
                  {:url "http://scala-tools.org/repo-releases"
+                  :snapshots false}
+                 "apache-releases"
+                 {:url "https://repository.apache.org/content/repositories/releases/"
                   :snapshots false}}
   :source-path "src"
   ;;:jvm-opts ["-Xms32m"]

@@ -21,6 +21,13 @@ CREATE TABLE openids(
   FOREIGN KEY("user") REFERENCES users
 );
 
+CREATE TABLE webids(
+  "user"       INTEGER   NOT NULL,
+  webid        VARCHAR   NOT NULL,
+  PRIMARY KEY(webid),
+  FOREIGN KEY("user") REFERENCES users
+);
+
 CREATE TABLE rsa_keys(
   modulus  NUMERIC   NOT NULL,
   exponent NUMERIC   NOT NULL,

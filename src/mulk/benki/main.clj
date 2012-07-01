@@ -137,7 +137,8 @@
 
 (defn init-security! []
   (java.security.Security/addProvider
-   (org.bouncycastle.jce.provider.BouncyCastleProvider.)))
+   (org.bouncycastle.jce.provider.BouncyCastleProvider.))
+  (Class/forName "net.java.dev.sommer.foafssl.sesame.verifier.SesameFoafSslVerifier"))
 
 (defn -main [& args]
   (do
