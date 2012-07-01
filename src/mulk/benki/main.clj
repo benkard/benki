@@ -114,7 +114,7 @@
         response))))
 
 (defn init-config! []
-  (swap! benki-config (read-string (slurp (.getFile (clojure.java.io/resource "config.sexp"))))))
+  (reset! benki-config (read-string (slurp (.getFile (clojure.java.io/resource "config.sexp"))))))
 
 (defn init-middleware! []
   (noir.server/add-middleware #(ring.middleware.file-info/wrap-file-info %))
@@ -136,7 +136,7 @@
                              {:port      (:web-port @benki-config)
                               :websocket true})))
 
-(def server (atom nil))
+(defonce server (atom nil))
 
 (defn init-security! []
   (java.security.Security/addProvider
@@ -153,7 +153,7 @@
             ((ns-resolve 'mulk.benki.xmpp 'init-xmpp!)))
     (future (require 'mulk.benki.lazychat)
             ((ns-resolve 'mulk.benki.lazychat 'init-lazychat!)))
-    (future (swap! server (run-server))))
+    (future (reset! server (run-server))))
   (loop []
     (Thread/sleep 1000000)
     (recur)))
