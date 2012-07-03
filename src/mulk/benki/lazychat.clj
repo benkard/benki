@@ -32,16 +32,11 @@
   [message]
   (fmt nil "<~A>\n\n~A" (:first_name message) (:content message)))
 
-(defn determine-targets [message]
-  (letfn [(protected-targets []
-            (with-dbt
-              (map :id (query "SELECT id FROM users WHERE status IN ('admin', 'approved')"))))]
-    (into #{}
-          (concat (:targets message)
-                  (case (keyword (:visibility message))
-                    :personal  nil
-                    :protected (protected-targets)
-                    :public    (cons nil (protected-targets)))))))
+(defn determine-targets [message-id]
+  (with-dbt
+    (map :user (query "SELECT \"user\" FROM user_visible_lazychat_messages
+                        WHERE message = ?"
+                      message-id))))
 
 (defn fill-in-author-details [x]
   x)
@@ -83,7 +78,7 @@
   (create-lazychat-message-by-user! *user* msg))
 
 (defn push-message-to-xmpp [msg]
-  (let [targets (filter integer? (determine-targets msg))]
+  (let [targets (filter integer? (determine-targets {:id msg}))]
     (enqueue xmpp/messages {:message msg,
                             :targets targets})))
 
@@ -137,15 +132,10 @@
        ["SELECT m.id, m.author, m.date, m.content, m.format, u.first_name, u.last_name
            FROM lazychat_messages m
            JOIN users u ON (author = u.id)
-          WHERE (visibility = 'public'
-                 OR (visibility = 'protected' AND (?::INTEGER) IS NOT NULL)
-                 OR (visibility = 'personal'
-                     AND EXISTS (SELECT *
-                                   FROM lazychat_targets t
-                                  WHERE t.target = (?::INTEGER)
-                                        AND message = m.id)))
+           JOIN user_visible_lazychat_messages uvlm ON (uvlm.message = m.id)
+          WHERE uvlm.user IS NOT DISTINCT FROM ?
           ORDER BY m.date DESC"
-        ~user ~user]
+        ~user]
     ~@body))
 
 

@@ -2,11 +2,6 @@
 
 BEGIN TRANSACTION;
 
-CREATE TABLE roles(
-  id SERIAL NOT NULL,
-  PRIMARY KEY(id)
-);
-
 CREATE TABLE users(
   id           SERIAL    NOT NULL,
   first_name   VARCHAR,
@@ -15,10 +10,8 @@ CREATE TABLE users(
   email        VARCHAR,
   website      VARCHAR,
   status       VARCHAR,
-  "role"       INTEGER   NOT NULL,
   PRIMARY KEY(id),
-  CHECK (status IN ('admin', 'approved', 'visitor', 'disabled')),
-  FOREIGN KEY("role") REFERENCES roles
+  CHECK (status IN ('admin', 'approved', 'visitor', 'disabled'))
 );
 
 CREATE TABLE openids(
@@ -72,22 +65,6 @@ CREATE TABLE user_jids(
   FOREIGN KEY("user") REFERENCES users
 );
 CREATE INDEX user_jids_user ON user_jids ("user");
-
-CREATE TABLE role_subroles(
-  "superrole" INTEGER NOT NULL,
-  "subrole"   INTEGER NOT NULL,
-  PRIMARY KEY("superrole", "subrole"),
-  FOREIGN KEY("superrole") REFERENCES roles,
-  FOREIGN KEY("subrole") REFERENCES roles
-);
-
-CREATE TABLE user_roles(
-  "user" INTEGER NOT NULL,
-  "role" INTEGER NOT NULL,
-  PRIMARY KEY("user", "role"),
-  FOREIGN KEY("user") REFERENCES users,
-  FOREIGN KEY("role") REFERENCES roles
-);
 
 CREATE TABLE page_keys(
   "user" INTEGER NOT NULL,
@@ -143,10 +120,12 @@ CREATE TABLE lazychat_messages(
   author      INTEGER,
   date        TIMESTAMP WITH TIME ZONE DEFAULT now(),
   content     VARCHAR,
+  visibility  VARCHAR NOT NULL,
   format      VARCHAR NOT NULL,
   PRIMARY KEY(id),
   FOREIGN KEY(author) REFERENCES users,
-  CHECK (format IN ('markdown'))
+  CHECK (format     IN ('markdown')),
+  CHECK (visibility IN ('personal', 'protected', 'public'))
 );
 
 CREATE TABLE lazychat_targets(
@@ -154,7 +133,7 @@ CREATE TABLE lazychat_targets(
   target  INTEGER NOT NULL,
   PRIMARY KEY(message, target),
   FOREIGN KEY(message) REFERENCES lazychat_messages,
-  FOREIGN KEY(target)  REFERENCES roles
+  FOREIGN KEY(target)  REFERENCES users
 );
 
 CREATE TABLE lazychat_references(
@@ -165,75 +144,5 @@ CREATE TABLE lazychat_references(
   FOREIGN KEY(referee)  REFERENCES lazychat_messages
 );
 
-CREATE VIEW effective_role_subroles AS
-  WITH RECURSIVE t(superrole, subrole) AS (
-      SELECT id, id
-        FROM roles
-    UNION
-      SELECT t.superrole, rs.subrole
-        FROM t t
-       INNER JOIN role_subroles rs
-          ON (rs.superrole = t.subrole)
-  )
-  SELECT * FROM t;
+COMMIT;
 
-CREATE VIEW effective_user_roles AS
-    (SELECT ur."user", er.subrole AS role
-       FROM user_roles ur
-      INNER JOIN effective_role_subroles er
-         ON (er.superrole = ur.role))
-  UNION
-    (SELECT u.id AS "user", rt.role FROM users u, role_tags rt WHERE rt.tag IN ('everyone', 'world'))
-  UNION
-    (SELECT NULL, rt.role FROM role_tags rt WHERE rt.tag = 'world');
-
-CREATE FUNCTION new_user_put_in_universal_role() RETURNS TRIGGER AS $$
-DECLARE
-  universal_role INTEGER;
-BEGIN
-  SELECT "role" FROM role_tags WHERE tag = 'everyone' INTO universal_role;
-  INSERT INTO user_roles VALUES (NEW.id, universal_role);
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER new_user_put_in_universal_role
-  AFTER INSERT ON users
-  FOR EACH ROW
-  EXECUTE PROCEDURE put_new_user_in_universal_role();
-
-CREATE FUNCTION new_user_put_user_in_user_role() RETURNS TRIGGER AS $$
-BEGIN
-  INSERT INTO user_roles VALUES (NEW."role", user_role);
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER new_user_put_user_in_user_role
-  AFTER INSERT ON users
-  FOR EACH ROW
-  EXECUTE PROCEDURE new_user_put_user_in_user_role();
-
-CREATE FUNCTION new_user_create_user_role() RETURNS TRIGGER AS $$
-DECLARE
-  new_role INTEGER;
-BEGIN
-  INSERT INTO roles("name") VALUES (concat(NEW.first_name, ' ', NEW.last_name))
-    RETURNING id INTO STRICT new_role;
-  UPDATE users SET "role" = new_role WHERE id = NEW.id;
-  NEW.role := new_role;
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER new_user_create_user_role
-  BEFORE INSERT ON users
-  FOR EACH ROW
-  EXECUTE PROCEDURE new_user_create_user_role();
-
-CREATE VIEW user_visible_lazychat_messages AS
-  SELECT eur.user, t.message
-    FROM effective_user_roles eur, lazychat_targets t
-   WHERE t.target = eur.role;
-
-ROLLBACK;
---COMMIT;
