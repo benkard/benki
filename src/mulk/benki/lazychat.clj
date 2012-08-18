@@ -62,18 +62,18 @@
                              [:referrer :referee]
                              [id (int referee)]))
         (doseq [target targets]
-          (sql/insert-values :lazychat_targets
+          (sql/insert-values :post_targets
                              [:message :target]
                              [id (int target)]))
         (case visibility
           ("public")
             (sql/do-prepared
-             "INSERT INTO lazychat_targets
+             "INSERT INTO post_targets
                    SELECT ?, role FROM role_tags WHERE tag = 'world'"
              [id])
           ("protected")
             (sql/do-prepared
-             "INSERT INTO lazychat_targets
+             "INSERT INTO post_targets
                    SELECT ?, target FROM user_default_target WHERE (\"user\" = ?)"
              [id user])
           ("private")
@@ -113,7 +113,7 @@
                            WHERE id = ?"
                          id)
         referees (map :referee (query  "SELECT referee FROM lazychat_references WHERE referrer = ?" id))
-        targets  (map :target  (query  "SELECT target  FROM lazychat_targets    WHERE message = ?" id))]
+        targets  (map :target  (query  "SELECT target  FROM post_targets        WHERE message = ?" id))]
     (and message
          (assoc message
            :referees referees

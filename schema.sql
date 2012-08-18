@@ -146,15 +146,14 @@ CREATE TABLE lazychat_messages INHERITS posts (
   content     VARCHAR,
   format      VARCHAR NOT NULL,
   PRIMARY KEY(id),
-  FOREIGN KEY(author) REFERENCES users,
   CHECK (format IN ('markdown'))
 );
 
-CREATE TABLE lazychat_targets(
+CREATE TABLE post_targets(
   message INTEGER NOT NULL,
-  target  INTEGER NOT NULL,
+  post    INTEGER NOT NULL,
   PRIMARY KEY(message, target),
-  FOREIGN KEY(message) REFERENCES lazychat_messages,
+  --FOREIGN KEY(message) REFERENCES posts AND CHILDREN,
   FOREIGN KEY(target)  REFERENCES roles
 );
 
@@ -162,8 +161,8 @@ CREATE TABLE lazychat_references(
   referrer INTEGER NOT NULL,
   referee  INTEGER NOT NULL,
   PRIMARY KEY(referrer, referee),
-  FOREIGN KEY(referrer) REFERENCES lazychat_messages,
-  FOREIGN KEY(referee)  REFERENCES lazychat_messages
+  --FOREIGN KEY(referee)  REFERENCES posts AND CHILDREN,
+  FOREIGN KEY(referrer) REFERENCES lazychat_messages
 );
 
 CREATE TABLE user_default_target(
@@ -239,13 +238,18 @@ CREATE TRIGGER new_user_create_user_role
   FOR EACH ROW
   EXECUTE PROCEDURE new_user_create_user_role();
 
-CREATE VIEW user_visible_lazychat_messages AS
+CREATE VIEW user_visible_posts AS
    SELECT eur.user, t.message
-     FROM effective_user_roles eur, lazychat_targets t
+     FROM effective_user_roles eur, post_targets t
     WHERE t.target = eur.role
   UNION
-    SELECT m.author, m.message
-    FROM lazychat_messages m;
+    SELECT m.owner, m.message
+    FROM posts m;
+
+CREATE VIEW user_visible_lazychat_messages AS
+  SELECT uvp.user, uvp.message
+    FROM user_visible_posts uvp
+    INNER JOIN lazychat_messages lm ON lm.id = uvp.message;
 
 ROLLBACK;
 --COMMIT;
