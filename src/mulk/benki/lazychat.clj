@@ -69,13 +69,13 @@
           ("public")
             (sql/do-prepared
              "INSERT INTO lazychat_targets
-                    SELECT ?, role FROM role_tags WHERE tag = 'world'"
+                   SELECT ?, role FROM role_tags WHERE tag = 'world'"
              [id])
           ("protected")
             (sql/do-prepared
              "INSERT INTO lazychat_targets
-                    SELECT ?, role FROM role_tags WHERE tag = 'inner_circle'"
-             [id])
+                   SELECT ?, target FROM user_default_target WHERE (\"user\" = ?)"
+             [id user])
           ("private")
             (do))
         (enqueue lafargue-events

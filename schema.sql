@@ -165,6 +165,14 @@ CREATE TABLE lazychat_references(
   FOREIGN KEY(referee)  REFERENCES lazychat_messages
 );
 
+CREATE TABLE user_default_target(
+  "user" INTEGER NOT NULL,
+  target INTEGER NOT NULL,
+  PRIMARY KEY("user", target),
+  FOREIGN KEY("user") REFERENCES users,
+  FOREIGN KEY(target) REFERENCES roles
+);
+
 CREATE VIEW effective_role_subroles AS
   WITH RECURSIVE t(superrole, subrole) AS (
       SELECT id, id
