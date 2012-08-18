@@ -117,10 +117,15 @@ CREATE TABLE wiki_page_revisions(
 );
 
 
-CREATE TABLE bookmarks(
+CREATE TABLE posts(
   id          SERIAL    NOT NULL,
   owner       INTEGER,
   date        TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  PRIMARY KEY(id),
+  FOREIGN KEY(owner) REFERENCES users
+);
+
+CREATE TABLE bookmarks INHERITS posts (
   uri         VARCHAR   NOT NULL,
   title       VARCHAR,
   description VARCHAR,
@@ -137,11 +142,7 @@ CREATE TABLE bookmark_tags(
   FOREIGN KEY(bookmark) REFERENCES bookmarks
 );
 
-
-CREATE TABLE lazychat_messages(
-  id          SERIAL    NOT NULL,
-  author      INTEGER,
-  date        TIMESTAMP WITH TIME ZONE DEFAULT now(),
+CREATE TABLE lazychat_messages INHERITS posts (
   content     VARCHAR,
   format      VARCHAR NOT NULL,
   PRIMARY KEY(id),

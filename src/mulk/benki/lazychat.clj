@@ -48,11 +48,11 @@
   (with-dbt
     (when id
       ;; FIXME: Is this assertion sufficient?  Is it too strict?
-      (assert (query1 "SELECT 't' WHERE currval('lazychat_messages_id_seq') >= ?" id)))
+      (assert (query1 "SELECT 't' WHERE currval('posts_id_seq') >= ?" id)))
     (let [id (or id
-                 (:id (query1 "SELECT nextval('lazychat_messages_id_seq')::INTEGER AS id")))]
+                 (:id (query1 "SELECT nextval('posts_id_seq')::INTEGER AS id")))]
       (sql/with-query-results ids
-        ["INSERT INTO lazychat_messages(id, author, content, format)
+        ["INSERT INTO lazychat_messages(id, owner, content, format)
                VALUES (?, ?, ?, ?)
             RETURNING id"
          id user content format]
@@ -84,7 +84,7 @@
                     {:content  content,  :visibility visibility,
                      :format   format,   :targets    targets,
                      :referees referees, :id         id,
-                     :author   user,     :date       (java.util.Date.)})
+                     :owner    user,     :date       (java.util.Date.)})
                    {:type ::lafargue-message}))))))
 
 (defn create-lazychat-message! [msg]
@@ -108,7 +108,7 @@
                                        :referees   []})))
 
 (defn select-message [id]
-  (let [message  (query1 "SELECT author, content, format, visibility, date
+  (let [message  (query1 "SELECT owner, content, format, visibility, date
                             FROM lazychat_messages
                            WHERE id = ?"
                          id)
@@ -145,9 +145,9 @@
 
 (defmacro with-messages-visible-by-user [[messages user] & body]
   `(sql/with-query-results ~messages
-       ["SELECT m.id, m.author, m.date, m.content, m.format, u.first_name, u.last_name
+       ["SELECT m.id, m.owner, m.date, m.content, m.format, u.first_name, u.last_name
            FROM lazychat_messages m
-           JOIN users u ON (author = u.id)
+           JOIN users u ON (owner = u.id)
            JOIN user_visible_lazychat_messages uvlm ON (uvlm.message = m.id)
           WHERE uvlm.user IS NOT DISTINCT FROM ?
           ORDER BY m.date DESC"
@@ -262,7 +262,7 @@
 (defpage [:post "/lafargue/messages/genid"] {id :id}
   (with-auth
     (response/json
-      (with-dbt (query1 "SELECT NEXTVAL('lazychat_messages_id_seq')")))))
+      (with-dbt (query1 "SELECT NEXTVAL('posts_id_seq')")))))
 
 (defn init-lazychat! []
   (receive-all lafargue-events push-message-to-xmpp)
