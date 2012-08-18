@@ -36,7 +36,7 @@
   (with-dbt
     (map :user (query "SELECT \"user\" FROM user_visible_lazychat_messages
                         WHERE message = ?"
-                      message-id))))
+                      (:id (:id message-id))))))
 
 (defn fill-in-author-details [x]
   x)
@@ -52,10 +52,11 @@
     (let [id (or id
                  (:id (query1 "SELECT nextval('lazychat_messages_id_seq')::INTEGER AS id")))]
       (sql/with-query-results ids
-        ["INSERT INTO lazychat_messages(id, author, content, format, visibility)
-               VALUES (?, ?, ?, ?, ?)
+        ["INSERT INTO lazychat_messages(id, author, content, format)
+               VALUES (?, ?, ?, ?)
             RETURNING id"
-         id user content format visibility]
+         id user content format]
+        (log (fmt nil "~S ~S ~S ~S" id user content format))
         (doseq [referee referees]
           (sql/insert-values :lazychat_references
                              [:referrer :referee]
@@ -64,6 +65,19 @@
           (sql/insert-values :lazychat_targets
                              [:message :target]
                              [id (int target)]))
+        (case visibility
+          ("public")
+            (sql/do-prepared
+             "INSERT INTO lazychat_targets
+                    SELECT ?, role FROM role_tags WHERE tag = 'world'"
+             [id])
+          ("protected")
+            (sql/do-prepared
+             "INSERT INTO lazychat_targets
+                    SELECT ?, role FROM role_tags WHERE tag = 'inner_circle'"
+             [id])
+          ("private")
+            (do))
         (enqueue lafargue-events
                  (with-meta
                    (fill-in-author-details
@@ -78,7 +92,7 @@
   (create-lazychat-message-by-user! *user* msg))
 
 (defn push-message-to-xmpp [msg]
-  (let [targets (filter integer? (determine-targets {:id msg}))]
+  (let [targets (filter integer? (determine-targets (:id msg)))]
     (enqueue xmpp/messages {:message msg,
                             :targets targets})))
 
@@ -106,11 +120,13 @@
            :targets  targets))))
 
 (defn may-read? [user message]
-  (or (= (:visibility message) "public")
-      (and user (= (:visibility message) "protected"))
-      (and user
-           (= (:visibility message) "personal")
-           (contains? (:targets message) user))))
+  (with-dbt
+    (seq
+     (query "SELECT 't' FROM user_visible_lazychat_messages
+              WHERE \"user\" IS NOT DISTINCT FROM ?
+                AND \"message\" = ?"
+            user
+            message))))
 
 (defn may-post? [user]
   user)
@@ -204,7 +220,7 @@
 
 (defpage-async "/lafargue/events" {} conn
   (if (websocket? conn)
-    (let [messages (filter* #(may-read? *user* %) lafargue-events)]
+    (let [messages (filter* #(may-read? *user* (:id %)) lafargue-events)]
       (receive-all messages
                    (fn [msg]
                      (async-push conn (render-message-as-json msg)))))
@@ -239,7 +255,7 @@
 (defpage [:get "/lafargue/messages/:id"] {id :id}
   (with-dbt
     (let [message (select-message id)]
-      (if (may-read? *user* message)
+      (if (may-read? *user* (:id message))
         (response/json message)
         {:status 403}))))
 

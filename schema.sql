@@ -231,9 +231,12 @@ CREATE TRIGGER new_user_create_user_role
   EXECUTE PROCEDURE new_user_create_user_role();
 
 CREATE VIEW user_visible_lazychat_messages AS
-  SELECT eur.user, t.message
-    FROM effective_user_roles eur, lazychat_targets t
-   WHERE t.target = eur.role;
+   SELECT eur.user, t.message
+     FROM effective_user_roles eur, lazychat_targets t
+    WHERE t.target = eur.role
+  UNION
+    SELECT m.author, m.message
+    FROM lazychat_messages m;
 
 ROLLBACK;
 --COMMIT;
