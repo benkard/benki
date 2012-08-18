@@ -23,6 +23,7 @@
 (def bookmarks     (cq/table :bookmarks))
 (def tags          (cq/table :tags))
 (def users         (cq/table :users))
+(def user-visible-bookmarks (cq/table :user_visible_bookmarks))
 
 
 (def bookmarx-list-page
@@ -47,27 +48,17 @@
             [:script {:type "text/javascript"
                       :src (resolve-uri "/js/bookmarx-submit.js")}])})
 
-(defn restrict-visibility [table user]
-  (if user
-    (cq/select table
-               (cq/where (or (=* :visibility "public")
-                             (=* :visibility "protected")
-                             (and (=* :visibility "private")
-                                  (=* :owner      user)))))
-    (cq/select table
-               (cq/where (=* :visibility "public")))))
-
-
 
 (def htmlize-description (comp sanitize-html markdown->html))
 
 (defn bookmarks-visible-by [user]
-  (-> bookmarks
+  (-> user-visible-bookmarks
+      (cq/select (=* :user_visible_bookmarks.user user))
+      (cq/join bookmarks (=* :user_visible_bookmarks.message :bookmarks.id))
       (cq/join users (=* :bookmarks.owner :users.id))
       (cq/project [:bookmarks.* :users.first_name :users.last_name])
       ;;(cq/rename {:users.id :uid})
-      (restrict-visibility user)
-      (cq/sort [:date#desc])))
+      (cq/sort [:bookmarks.date#desc])))
 
 (defpage "/marx" {}
   (let [marks (bookmarks-visible-by *user*)]
@@ -171,14 +162,26 @@
       (with-dbt
         (let [bookmark (sql/with-query-results
                          results
-                         ["INSERT INTO bookmarks (owner, uri, title, description,
-                                                  visibility)
-                              VALUES (?, ?, ?, ?, ?)
+                         ["INSERT INTO bookmarks (owner, uri, title, description)
+                              VALUES (?, ?, ?, ?)
                            RETURNING id"
-                          *user* uri title description visibility]
+                          *user* uri title description]
                          (:id (first (into () results))))]
           (doseq [tag tagseq]
-            (sql/insert-values :bookmark_tags [:bookmark :tag] [bookmark tag]))))))
+            (sql/insert-values :bookmark_tags [:bookmark :tag] [bookmark tag]))
+          (case visibility
+            ("public")
+              (sql/do-prepared
+               "INSERT INTO post_targets
+                     SELECT ?, role FROM role_tags WHERE tag = 'world'"
+               [bookmark])
+            ("protected")
+              (sql/do-prepared
+               "INSERT INTO post_targets
+                     SELECT ?, target FROM user_default_target WHERE (\"user\" = ?)"
+               [bookmark *user*])
+            ("private")
+              (do))))))
   (if (and origin (not= origin ""))
     (redirect origin)
     (redirect (link :marx))))

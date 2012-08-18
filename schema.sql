@@ -129,10 +129,8 @@ CREATE TABLE bookmarks INHERITS posts (
   uri         VARCHAR   NOT NULL,
   title       VARCHAR,
   description VARCHAR,
-  visibility  VARCHAR,
   PRIMARY KEY(id),
-  FOREIGN KEY(owner) REFERENCES users,
-  CHECK (visibility IN ('private', 'protected', 'public'))
+  FOREIGN KEY(owner) REFERENCES users
 );
 
 CREATE TABLE bookmark_tags(
@@ -250,6 +248,11 @@ CREATE VIEW user_visible_lazychat_messages AS
   SELECT uvp.user, uvp.message
     FROM user_visible_posts uvp
     INNER JOIN lazychat_messages lm ON lm.id = uvp.message;
+
+CREATE VIEW user_visible_bookmarks AS
+  SELECT uvp.user, uvp.message
+    FROM user_visible_posts uvp
+    INNER JOIN bookmarks bm ON bm.id = uvp.message;
 
 ROLLBACK;
 --COMMIT;
