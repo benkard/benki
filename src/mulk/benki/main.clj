@@ -162,8 +162,10 @@
 (defn init! []
   (init-config!)
   (init-middleware!)
-  (noir.server/load-views-ns 'mulk.benki)
   (init-security!)
+  ;;(noir.server/load-views-ns 'mulk.benki) ;doesn't work on Immutant
+  (doseq [ns '(mulk.benki.book_marx mulk.benki.lazychat)]
+    (require ns))
   (future (run-immutant-swank!))
   (future (require 'mulk.benki.xmpp)
           ((ns-resolve 'mulk.benki.xmpp 'init-xmpp!)))
