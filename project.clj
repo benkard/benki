@@ -28,9 +28,9 @@
                  [noir "1.3.0-beta10"]
                  [hiccup "1.0.0"]
                  [cssgen "0.2.6"]
-                 [aleph "0.3.0-alpha3"]
-                 [lamina "0.5.0-alpha3"]  ;-alpha4
-                 [noir-async "1.1.0-beta9"]
+                 [aleph "0.3.0-alpha3"]  ;-alpha2
+                 [lamina "0.5.0-alpha3"] ;-alpha4
+                 [noir-async "1.1.0-beta9"]  ;-beta9
 
                  ;; Trial-by-error dependencies
                  ;;
@@ -50,9 +50,9 @@
                  [org.openid4java/openid4java-server   "0.9.6" :extension "pom"]
                  [org.openid4java/openid4java-xri      "0.9.6" :extension "pom"]
                  [org.openid4java/openid4java-infocard "0.9.6" :extension "pom"]
-                 [xerces "2.4.0"]  ;log4j needs this; OpenID4Java needs log4j
+                 [xerces "2.4.0"] ;log4j needs this; OpenID4Java needs log4j
                  [xerces/xercesImpl "2.10.0"]  ;java-rdfa needs this
-                 [org.slf4j/slf4j-jcl "1.6.6"]  ;Jena needs this
+                 [org.slf4j/slf4j-jcl "1.6.6"] ;Jena needs this
                  ;;[org.slf4j/slf4j-log4j12 "1.6.6"]  ;doesn't seem to suffice for Jena
                  [org.jsoup/jsoup "1.6.1"]
                  [org.apache.abdera/abdera-parser       "1.1.2"]
@@ -87,8 +87,8 @@
   :plugins [[lein-swank "1.4.4"]
             ;;[lein-immutant "0.8.2"]
             ]
-  :exclusions [org.clojure/clojure-contrib  ;you know, the old pre-1.3.0 versions
-               org.clojure/clojure          ;so that we can enforce our preferred version
+  :exclusions [org.clojure/clojure-contrib ;you know, the old pre-1.3.0 versions
+               org.clojure/clojure ;so that we can enforce our preferred version
                org.clojure.contrib/prxml]
   ;;:hooks [leiningen.hooks.difftest]
   ;;:warn-on-reflection true     ;breaks M-x clojure-jack-in
@@ -113,7 +113,7 @@
                  "oracle"
                  {:url "http://download.oracle.com/maven/"
                   :snapshots false}
-                 "scala-releases"  ;pegdown
+                 "scala-releases"       ;pegdown
                  {:url "http://scala-tools.org/repo-releases"
                   :snapshots false}
                  "apache-releases"
