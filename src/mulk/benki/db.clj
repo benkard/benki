@@ -37,7 +37,7 @@
                                :database database
                                :username user
                                :password password
-                               :pool     1}))
+                               }))
           {:datasource @+immutant-db+})))))
 
 (defn ^:private db []
