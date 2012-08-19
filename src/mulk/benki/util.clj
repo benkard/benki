@@ -8,7 +8,8 @@
             [noir.request  :as request]
             [noir.response :as response]
             [clojure.java.jdbc :as sql]
-            [clojure.pprint])
+            [clojure.pprint]
+            [clojure.tools.logging :as logging])
   (:import [java.text DateFormat]
            [java.security SecureRandom]
            [java.math BigInteger]
@@ -145,15 +146,11 @@
 
 
 ;;;; * Debugging
-(defonce logger
-  (org.apache.log4j.Logger/getLogger "eu.mulk.benki"))
+(defmacro info [& args]
+  `(logging/info ~@args))
 
-(defn info [s]
-  (.info logger s))
+(defmacro debug [& args]
+  `(logging/debug ~@args))
 
-(defn log [s]
-  (.info logger s))
-
-(defn debug [s]
-  (.debug logger s))
-
+(defmacro log [& args]
+  `(logging/info ~@args))

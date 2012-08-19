@@ -143,17 +143,36 @@
    (org.bouncycastle.jce.provider.BouncyCastleProvider.))
   (Class/forName "net.java.dev.sommer.foafssl.sesame.verifier.SesameFoafSslVerifier"))
 
+(defn run-immutant-swank!
+  "Call `immutant.repl/start-swank` with the Swank configuration
+  specified in `benki-config`.  If loading the immutant.repl namespace
+  fails, ignore the error and return `nil` without doing anything.  In
+  case of success, return true."  []
+  (when-let [swank-config (get @benki-config :swank)]
+    (when (and (get swank-config :enabled true)
+               (try
+                 (require 'immutant.repl)
+                 true
+                 (catch Exception e
+                   false)))
+      ((ns-resolve 'immutant.repl 'start-swank)
+       (:bind swank-config) (:port swank-config))
+      true)))
+
+(defn init! []
+  (init-config!)
+  (init-middleware!)
+  (noir.server/load-views-ns 'mulk.benki)
+  (init-security!)
+  (future (run-immutant-swank!))
+  (future (require 'mulk.benki.xmpp)
+          ((ns-resolve 'mulk.benki.xmpp 'init-xmpp!)))
+  (future (require 'mulk.benki.lazychat)
+          ((ns-resolve 'mulk.benki.lazychat 'init-lazychat!)))
+  (future (reset! server (run-server))))
+
 (defn -main [& args]
-  (do
-    (init-config!)
-    (init-middleware!)
-    (noir.server/load-views-ns 'mulk.benki)
-    (init-security!)
-    (future (require 'mulk.benki.xmpp)
-            ((ns-resolve 'mulk.benki.xmpp 'init-xmpp!)))
-    (future (require 'mulk.benki.lazychat)
-            ((ns-resolve 'mulk.benki.lazychat 'init-lazychat!)))
-    (future (reset! server (run-server))))
+  (init!)
   (loop []
     (Thread/sleep 1000000)
     (recur)))

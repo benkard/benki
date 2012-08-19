@@ -11,6 +11,9 @@
  :tag-base       "example.com"
  :web-port       3001
  :mode           :production   ;or :dev
+ :swank          {:enabled true             ;will be assumed true if absent
+                  :port    4005
+                  :bind    "127.0.0.1"}
  :xmpp           {:enabled      true        ;will be assumed true if absent
                   :user         "benki"
                   :service-name "example.com"

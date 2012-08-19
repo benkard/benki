@@ -20,7 +20,7 @@
                  [org.clojure/tools.logging "0.2.3"]
                  [org.clojure/tools.macro "0.1.1"]
                  [org.clojure/tools.namespace "0.1.0"]
-                 [org.clojure/tools.nrepl "0.0.5"]
+                 ;;[org.clojure/tools.nrepl "0.0.5"]
                  [org.clojure/tools.trace "0.7.1"]
 
                  ;; Web app utilities
@@ -31,6 +31,13 @@
                  [aleph "0.3.0-alpha3"]
                  [lamina "0.5.0-alpha3"]  ;-alpha4
                  [noir-async "1.1.0-beta9"]
+
+                 ;; Trial-by-error dependencies
+                 ;;
+                 ;; Netty 3.5.2.Final seems to be required for
+                 ;; Immutant deployment --- throws weird
+                 ;; NoClassDefFound errors otherwise.
+                 [io.netty/netty "3.5.2.Final"]
 
                  ;; Relational database access
                  [clojureql "1.0.3"]
@@ -115,4 +122,11 @@
   :source-path "src"
   ;;:jvm-opts ["-Xms32m"]
   :main mulk.benki.main
+  :immutant {:resolve-dependencies true
+             :context-path "/"
+             ;;:virtual-host ""
+             ;;:nrepl-port 4112
+             ;;:swank-port 4005   ;alternatively: set in config.sexp
+             :init mulk.benki.main/init!
+             }
   :min-lein-version "2.0.0")
