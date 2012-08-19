@@ -11,7 +11,8 @@
  :tag-base       "example.com"
  :web-port       3001
  :mode           :production   ;or :dev
- :xmpp           {:user         "benki"
+ :xmpp           {:enabled      true        ;will be assumed true if absent
+                  :user         "benki"
                   :service-name "example.com"
                   :server       "jabber.example.com"
                   :port         5222

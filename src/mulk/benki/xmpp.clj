@@ -90,7 +90,9 @@
                     (enqueue messages-in {:sender (.getParticipant chat) :body body}))))))))))))
 
 (defn init-xmpp! []
-  (future
-    (reconnect!)
-    (handle-incoming-chats)
-    (startup-client)))
+  (when-let [xmpp-config (get @benki-config :xmpp)]
+    (when (get xmpp-config :enabled true)
+      (future
+        (reconnect!)
+        (handle-incoming-chats)
+        (startup-client)))))
