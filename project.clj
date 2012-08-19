@@ -1,8 +1,11 @@
+;; -*- mode: clojure -*-
+
 (defproject benki "0.0.0-SNAPSHOT"
   :description "The Benkard Family Hub"
   :dependencies [[org.clojure/clojure "1.4.0"]
 
                  ;; Clojure Contrib
+                 [prxml "1.3.1"]
                  [org.clojure/algo.generic "0.1.0"]
                  [org.clojure/algo.monads "0.1.0"]
                  [org.clojure/core.logic "0.6.5"]
@@ -21,13 +24,13 @@
                  [org.clojure/tools.trace "0.7.1"]
 
                  ;; Web app utilities
-                 [ring "1.1.1"]
+                 [ring "1.1.2"]
                  [noir "1.3.0-beta10"]
                  [hiccup "1.0.0"]
-                 [cssgen "0.2.5"]
-                 [aleph "0.3.0-alpha2"]
-                 [lamina "0.5.0-alpha3"]
-                 [noir-async "1.1.0-beta1"]
+                 [cssgen "0.2.6"]
+                 [aleph "0.3.0-alpha3"]
+                 [lamina "0.5.0-alpha3"]  ;-alpha4
+                 [noir-async "1.1.0-beta9"]
 
                  ;; Relational database access
                  [clojureql "1.0.3"]
@@ -74,7 +77,9 @@
                  [org.apache.jena/jena-tdb "0.9.1"]
                  [org.apache.jena/jena-larq "1.0.0-incubating"]
                  [org.apache.jena/jena-iri "0.9.1"]]
-  :plugins [[lein-swank "1.4.3"]]
+  :plugins [[lein-swank "1.4.4"]
+            ;;[lein-immutant "0.8.2"]
+            ]
   :exclusions [org.clojure/clojure-contrib  ;you know, the old pre-1.3.0 versions
                org.clojure/clojure          ;so that we can enforce our preferred version
                org.clojure.contrib/prxml]
