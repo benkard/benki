@@ -1,8 +1,9 @@
 ;;;; -*- mode: clojure; coding: utf-8 -*-
 
-{:database       {:classname "org.postgresql.Driver"
-                  :subprotocol "postgresql"
-                  :subname "//localhost:5432/benki"
+{:database       {;; NOTE: PostgreSQL is the only supported RDBMS.
+                  :host "localhost"
+                  :port 5432
+                  :database "benki"
                   :user "benki"
                   :password ""}
  :websocket-base "ws://localhost:3001"
