@@ -11,4 +11,5 @@ pom.xml
 frontend
 mvn-local
 target
+.tmp_jar_mounts
 
