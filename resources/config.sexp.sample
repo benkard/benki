@@ -15,6 +15,9 @@
  :swank          {:enabled true             ;will be assumed true if absent
                   :port    4005
                   :bind    "127.0.0.1"}
+ :nrepl          {:enabled true             ;will be assumed true if absent
+                  :port    4111
+                  :bind    "127.0.0.1"}
  :xmpp           {:enabled      true        ;will be assumed true if absent
                   :user         "benki"
                   :service-name "example.com"

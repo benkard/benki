@@ -159,6 +159,22 @@
        (:bind swank-config) (:port swank-config))
       true)))
 
+(defn run-immutant-nrepl!
+  "Call `immutant.repl/start-nrepl` with the Swank configuration
+  specified in `benki-config`.  If loading the immutant.repl namespace
+  fails, ignore the error and return `nil` without doing anything.  In
+  case of success, return true."  []
+  (when-let [swank-config (get @benki-config :nrepl)]
+    (when (and (get swank-config :enabled true)
+               (try
+                 (require 'immutant.repl)
+                 true
+                 (catch Exception e
+                   false)))
+      ((ns-resolve 'immutant.repl 'start-nrepl)
+       (:bind swank-config) (:port swank-config))
+      true)))
+
 (defn init! []
   (init-config!)
   (init-middleware!)
@@ -167,6 +183,7 @@
   (doseq [ns '(mulk.benki.book_marx mulk.benki.lazychat)]
     (require ns))
   (future (run-immutant-swank!))
+  (future (run-immutant-nrepl!))
   (future (require 'mulk.benki.xmpp)
           ((ns-resolve 'mulk.benki.xmpp 'init-xmpp!)))
   (future (require 'mulk.benki.lazychat)
