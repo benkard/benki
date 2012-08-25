@@ -59,7 +59,7 @@
 
 (defpage [:post "/login/browserid/verify"] {assertion :assertion}
   ;; NB.  Can implement this ourselves if we want.
-  (let [reply  (http/post "https://browserid.org/verify"
+  (let [reply  (http/post "https://verifier.login.persona.org/verify"
                           :query {:assertion assertion
                                   :audience (:base-uri @benki-config)}
                 :as :json)
@@ -79,7 +79,7 @@
              :body "I couldn't find you in the database."})))
       {:status 400,
        :headers {"Content-Type" "text/plain"},
-       :body "Your BrowserID request was crooked."})))
+       :body "Your Persona request was crooked."})))
 
 
 (defpage [:post "/login/return"] []
@@ -151,10 +151,10 @@
             (session/flash-put! ::return-uri return-uri)
             (layout login-page-layout "Benki Login"
               [:div#browserid-box
-               [:h2 "BrowserID login"]
+               [:h2 "Mozilla Persona login"]
                [:a#browserid {:href "#"}
                 [:img {:src (resolve-uri "/3rdparty/browserid/sign_in_orange.png")
-                       :alt "Sign in using BrowserID"}]]]
+                       :alt "Sign in using Mozilla Persona"}]]]
               [:div#openid-login-panel
                [:h2 "OpenID login"]
                [:form {:action (resolve-uri "/login/authenticate"),

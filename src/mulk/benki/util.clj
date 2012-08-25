@@ -58,7 +58,7 @@
     [:script {:type "text/javascript"
               :src (resolve-uri "/3rdparty/jquery/jquery-1.7.min.js")}]
     [:script {:type "text/javascript"
-              :src "https://browserid.org/include.js"}]
+              :src "https://login.persona.org/include.js"}]
     [:script {:type "text/javascript"
               :src (resolve-uri "/js/browserid.js")}]
     [:link {:type "text/css"
