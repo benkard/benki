@@ -165,5 +165,5 @@
              :wiki_page_revisions
              [:page   :title :content  :author :format]
              [page-id title  dbcontent user   "html5"]))
-          {:stetus 200, :headers {}, :body (wikilinkify (hrefify dbcontent))})
+          {:status 200, :headers {}, :body (wikilinkify (hrefify dbcontent))})
         {:status 403, :headers {}, :body ""}))))
