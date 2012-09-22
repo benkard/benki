@@ -3,5 +3,5 @@ CREATE OR REPLACE VIEW user_visible_lazychat_messages AS
      FROM effective_user_roles eur, lazychat_targets t
     WHERE t.target = eur.role
   UNION
-    SELECT m.author, m.message
+    SELECT m.author, m.id
     FROM lazychat_messages m;

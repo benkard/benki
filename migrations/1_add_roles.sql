@@ -90,7 +90,7 @@ WITH world(id) AS (
   INSERT INTO lazychat_targets
        SELECT m.id, world.id
          FROM lazychat_messages m, world
-        WHERE m.visibility = 'public';
+        WHERE m.visibility = 'public'
 )
 INSERT INTO role_tags SELECT id, 'world' FROM world;
 
@@ -131,7 +131,7 @@ $$ LANGUAGE plpgsql;
 CREATE TRIGGER new_user_put_in_universal_role
   AFTER INSERT ON users
   FOR EACH ROW
-  EXECUTE PROCEDURE put_new_user_in_universal_role();
+  EXECUTE PROCEDURE new_user_put_in_universal_role();
 
 CREATE FUNCTION new_user_put_user_in_user_role() RETURNS TRIGGER AS $$
 BEGIN

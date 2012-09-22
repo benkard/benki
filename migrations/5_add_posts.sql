@@ -1,3 +1,5 @@
+BEGIN TRANSACTION;
+
 -- Add table.
 CREATE TABLE posts(
   id          SERIAL    NOT NULL,
@@ -14,17 +16,23 @@ ALTER TABLE bookmark_tags
   ADD CONSTRAINT bookmark_tags_bookmark_fkey
     FOREIGN KEY (bookmark) REFERENCES bookmarks(id) ON UPDATE CASCADE;
 
-CREATE or replace FUNCTION tmp_update_bookmarx_ids() RETURNS VOID AS $$
+CREATE FUNCTION tmp_update_bookmarx_ids() RETURNS VOID AS $$
 DECLARE
+  min1 INTEGER;
+  min2 INTEGER;
   offst INTEGER;
   bookmark RECORD;
 BEGIN
-  SELECT MAX(id)+1 FROM lazychat_messages INTO offst;
-  UPDATE bookmarks SET id = id + offst cascade;
+  SELECT MAX(id)+1 FROM lazychat_messages INTO min1;
+  SELECT MAX(id)   FROM bookmarks         INTO min2;
+  SELECT GREATEST(min1, min2) INTO offst;
+  UPDATE bookmarks SET id = id + offst;
 END;
 $$ LANGUAGE plpgsql;
+--ALTER TABLE bookmarks DROP CONSTRAINT bookmarks_pkey;
 SELECT tmp_update_bookmarx_ids();
 DROP FUNCTION tmp_update_bookmarx_ids();
+--ALTER TABLE bookmarks ADD CONSTRAINT bookmarks_pkey PRIMARY KEY (id);
 
 -- Enable inheritance.
 ALTER TABLE bookmarks INHERIT posts;
@@ -43,3 +51,6 @@ SELECT setval('posts_id_seq', MAX(id)+1) FROM posts;
 -- FIXME: We ought to add some kind of constraint on bookmarks.id and
 -- lazychat_messages.id such that uniqueness across both tables is
 -- guaranteed.
+
+COMMIT;
+

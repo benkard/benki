@@ -1,3 +1,5 @@
+BEGIN TRANSACTION;
+
 CREATE TABLE user_default_target(
   "user" INTEGER NOT NULL,
   target INTEGER NOT NULL,
@@ -10,3 +12,6 @@ INSERT INTO user_default_target
      SELECT users.id, roles.id
        FROM users
       INNER JOIN roles ON (roles."name" = 'Inner Circle');
+
+COMMIT;
+
