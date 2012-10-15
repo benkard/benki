@@ -180,7 +180,7 @@
   (init-middleware!)
   (init-security!)
   ;;(noir.server/load-views-ns 'mulk.benki) ;doesn't work on Immutant
-  (doseq [ns '(mulk.benki.book_marx mulk.benki.lazychat mulk.benki.id)]
+  (doseq [ns '(mulk.benki.book_marx mulk.benki.lazychat mulk.benki.id mulk.benki.genkey)]
     (require ns))
   (future (run-immutant-swank!))
   (future (run-immutant-nrepl!))
