@@ -58,9 +58,11 @@
     [:script {:type "text/javascript"
               :src (resolve-uri "/3rdparty/jquery/jquery-1.7.min.js")}]
     [:script {:type "text/javascript"
-              :src "https://login.persona.org/include.js"}]
+              :src "https://login.persona.org/include.js"
+              :defer "defer"}]
     [:script {:type "text/javascript"
-              :src (resolve-uri "/js/browserid.js")}]
+              :src (resolve-uri "/js/browserid.js")
+              :defer "defer"}]
     [:link {:type "text/css"
             :rel  "stylesheet"
             :href (resolve-uri "/style/benki.css")}]
