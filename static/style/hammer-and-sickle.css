@@ -40,47 +40,30 @@ a:active {
 }
 
 ul.bookmarx-list, ul.lafargue-list {
-        list-style-type: none;
+	list-style-type: none;
 }
 
 h1 {
-	background-color: #ffbfbf;
-	background-image: url(hammerandsickle-yellow-on-red-bright.png);
-	background-position: 0 0;
-	background-repeat: no-repeat;
-	background-attachment: fixed;
+	background: rgb(255, 255, 255);
+	background: rgba(255, 255, 255, 0.7);
 	border: solid #bbccff;
-}
-
-h2 {
-	background-color: #ffbfbf;
-	background-image: url(hammerandsickle-yellow-on-red-bright.png);
-	background-position: 0 0;
-	background-repeat: no-repeat;
-	background-attachment: fixed;
 }
 
 #rtnv {
 	font-family: sans-serif, Arial, Helvetica;
 	color: inherit;
-	background-color: #ffbfbf;
-	background-image: url(hammerandsickle-yellow-on-red-bright.png);
-	background-position: 0 0;
-	background-repeat: no-repeat;
-	background-attachment: fixed;
+	background: rgb(255, 255, 255);
+	background: rgba(255, 255, 255, 0.7);
 	border: solid #bbccff;
 }
 
 .bookmark, .lafargue-message, #content {
 	/* border-right: 1px solid silver; */
 	color: inherit;
-	background-color: #ffbfbf;
-	background-image: url(hammerandsickle-yellow-on-red-bright.png);
-	background-position: 0 0;
-	background-repeat: no-repeat;
-	background-attachment: fixed;
+	background: rgba(255, 255, 255);
+	background: rgba(255, 255, 255, 0.7);
 	border: solid #bbccff;
-        margin: 10px;
+	margin: 10px;
 }
 
 p {
@@ -98,3 +81,4 @@ hr {
 	/* border: 1px solid silver; */
 	border: 0px;
 }
+
